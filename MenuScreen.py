@@ -1,6 +1,7 @@
 import arcade
 from utils import FadeManager as Fd
 from time import sleep
+from MenuScreen2 import MenuScreen as ms
 
 class MenuScreen(arcade.View):
     INTRO, BUTTONS, OUTRO = "intro", "buttons", "outro"
@@ -10,6 +11,7 @@ class MenuScreen(arcade.View):
         self.state = self.INTRO
         arcade.enable_timings()
         self.fadeManager = Fd.FadeManager(0.005)
+
 
     def on_show_view(self):
         """Chiamato solo la prima volta quando viene creata la view"""
@@ -25,6 +27,7 @@ class MenuScreen(arcade.View):
             arcade.set_background_color(arcade.color.WHITE)
             self.draw_state = self._draw_intro
         elif self.state == self.BUTTONS:
+            sleep(2)
             arcade.set_background_color(arcade.color.LIGHT_BLUE)
             self.draw_state = self._draw_buttons
         elif self.state == self.OUTRO:
@@ -34,7 +37,9 @@ class MenuScreen(arcade.View):
     def on_update(self, dt):
         """Chiamato ogni frame per aggiornare la logica dt è deltatime sec dall ultimo frame"""
         self.fadeManager.update()
-
+        if hasattr(self, "timerIntro") and self.timerIntro:
+            self._configura_stato()
+            self.window.show_view(ms)
         arcade.get_timings()
         #print(arcade.get_fps())
 
@@ -72,8 +77,8 @@ class MenuScreen(arcade.View):
                 self.window.width / 2, self.window.height / 2,
                 arcade.color.BLACK, font_size=30, anchor_x="center"
             )
-            #self.state = self.BUTTONS
-            #self._configura_stato()
+            self.state = self.BUTTONS
+            self.timerIntro = True
 
     def _draw_buttons(self):
         arcade.draw_text(
