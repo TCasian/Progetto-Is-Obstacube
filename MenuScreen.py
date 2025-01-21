@@ -72,9 +72,8 @@ class MenuScreen(arcade.View):
                 self.window.width / 2, self.window.height / 2,
                 arcade.color.BLACK, font_size=30, anchor_x="center"
             )
-            print("complemto")
-            self.state = self.BUTTONS
-            self._configura_stato()
+            #self.state = self.BUTTONS
+            #self._configura_stato()
 
     def _draw_buttons(self):
         arcade.draw_text(
