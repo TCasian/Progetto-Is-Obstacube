@@ -1,5 +1,5 @@
 import arcade
-from MenuScreen import MenuScreen
+from schermate.MenuScreen import MenuScreen
 
 def main():
     larghezza_schermo = 1024

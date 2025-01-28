@@ -15,6 +15,7 @@ class FadeManager:
         self.progress = None  # completamento (da 0 a 1)
         self.is_fading = False
 
+
     def start_fade(self, start_color, target_color):
         """Avvia il fade tra due colori RGBA."""
         if not self.is_fading:
@@ -26,6 +27,7 @@ class FadeManager:
 
     def update(self):
         if not self.is_fading:
+           # print("ritorno hihi")
             return
 
         self.progress += self.fade_rate
@@ -36,12 +38,17 @@ class FadeManager:
         if self.progress >= 1:
             self.is_fading = False
 
+
     def draw(self):
         if self.color:
-            arcade.draw_rectangle_filled(
-                WIDTH / 2, HEIGHT / 2, WIDTH, HEIGHT,
-                self.color
+            arcade.draw_lrbt_rectangle_filled(
+                left=0,
+                right=WIDTH,
+                top=HEIGHT,
+                bottom=0,
+                color=self.color
             )
+
 
     def _prendi_colore(self, color1, color2, t):
         return tuple(int(color1[i] + (color2[i] - color1[i]) * t) for i in range(4))
