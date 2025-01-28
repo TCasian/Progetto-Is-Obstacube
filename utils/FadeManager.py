@@ -2,7 +2,7 @@ import arcade
 
 
 
-WIDTH = 1024
+WIDTH = 1192
 HEIGHT = 767
 
 class FadeManager:

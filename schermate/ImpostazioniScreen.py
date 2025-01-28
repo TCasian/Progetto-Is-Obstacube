@@ -1,6 +1,6 @@
 import arcade
 
-class SettingsScreen(arcade.View):
+class ImpostazioniScreen(arcade.View):
 
     def on_update(self, delta_time):
         print("settings da fare")
