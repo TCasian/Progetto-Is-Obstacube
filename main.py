@@ -2,7 +2,7 @@ import arcade
 from schermate.MenuScreen import MenuScreen
 
 def main():
-    larghezza_schermo = 1192
+    larghezza_schermo = 1184
     altezza_schermo = 768
     window = arcade.Window(larghezza_schermo, altezza_schermo, "Obstacube")
     menu_view = MenuScreen()
