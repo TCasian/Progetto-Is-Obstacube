@@ -134,3 +134,4 @@ class RoundedButton:
     def on_hover(self, x, y):
         """Cambia lo stato hover se il cursore è sopra il bottone"""
         self.is_hovered = self.check_collision(x, y)
+        return self.is_hovered

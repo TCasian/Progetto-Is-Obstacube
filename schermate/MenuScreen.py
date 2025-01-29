@@ -19,8 +19,7 @@ class MenuScreen(arcade.View):
         self.state = self.INTRO
         arcade.enable_timings()
         self.fadeManager = Fd.FadeManager(0.015)
-        self.popupGioca = False
-        self.popupMappe = False
+        self.popup = False
         self.buttons = []
         self.popup_buttons = []
         self.debug = True
@@ -30,7 +29,7 @@ class MenuScreen(arcade.View):
         self._configura_stato()
         self.scene = arcade.Scene.from_tilemap(arcade.load_tilemap("Media/mappe/mappa_intro.tmx", scaling=1.0))
         self.logo_sprite = arcade.Sprite("Media/Img/Logo.png", 1)
-
+        #
     def _configura_stato(self):
         """Configura le cose base quando si cambia lo stato tipo background, musica ecc."""
         self.buttons = []  # Reset dei bottoni
@@ -55,7 +54,7 @@ class MenuScreen(arcade.View):
             ("Esci ", lambda: arcade.exit()),
             ("Impostazioni ", lambda: self.window.show_view(ImpostazioniScreen())),
             ("Shop", lambda: self.window.show_view(ShopScreen())),
-            ("Mappe ", lambda: self._on_click_mappe()),
+            ("Mappe ", lambda: self.window.show_view(MappeScreen())),
             ("Gioca ", lambda: self._on_click_gioca()),
 
         ]
@@ -87,22 +86,25 @@ class MenuScreen(arcade.View):
 
     def _draw_popup(self):
         """Disegna il popup sopra il menu"""
-        left = self.window.width // 4
-        right = self.window.width * 3 // 4
-        bottom = self.window.height // 4
-        top = self.window.height * 3 // 4
+        popup_width = self.window.width // 2 - 100
+        popup_height = self.window.height // 2 - 120
+        left = (self.window.width - popup_width) // 2
+        right = left + popup_width
+        bottom = (self.window.height - popup_height) // 2
+        top = bottom + popup_height
 
+        # Disegna lo sfondo del popup
         arcade.draw_lrbt_rectangle_filled(left, right, bottom, top, arcade.color.WHITE)
 
         popup_buttons_data = [
-            ("Standard", lambda: print("Standard")),
-            ("AI", lambda: print("AI")),
-        ]
+                ("Standard", lambda: print("Standard")),
+                ("AI", lambda: print("AI")),
+            ]
 
         self.popup_buttons = []
         button_height = 50
-        button_spacing = 20
-        start_y = (self.window.height // 2) - (len(popup_buttons_data) * (button_height + button_spacing)) // 2
+        button_spacing = 40
+        start_y = (self.window.height // 2) - (len(popup_buttons_data) * (button_height + button_spacing)) // 2 + 50
 
         for i, (label, callback) in enumerate(popup_buttons_data):
             x = self.window.width // 2
@@ -124,28 +126,12 @@ class MenuScreen(arcade.View):
             )
 
             self.popup_buttons.append(button)
-
         for button in self.popup_buttons:
             button.draw()
 
-    def _draw_popup_mappe(self):
-        left = self.window.width // 4
-        right = self.window.width * 3 // 4
-        bottom = self.window.height // 4
-        top = self.window.height * 3 // 4
-
-        arcade.draw_lrbt_rectangle_filled(left, right, bottom, top, arcade.color.WHITE)
-        x = self.window.width // 2
-        y = self.window.width // 3
-        arcade.draw_text("Sezione non disponibile", x, y, arcade.color.ORANGE, font_size=30, anchor_x="center")
-
-    def _on_click_mappe(self):
-        """Callback per il bottone mappe"""
-        self.popupMappe = True
-
     def _on_click_gioca(self):
         """Callback per il bottone 'Gioca'"""
-        self.popupGioca = True
+        self.popup = True
 
     def on_update(self, dt):
         """Chiamato ogni frame per aggiornare la logica"""
@@ -164,17 +150,15 @@ class MenuScreen(arcade.View):
         for button in self.buttons:
             button.draw()
 
-        if self.popupGioca:
-            self._draw_popup()
 
-        if self.popupMappe:
-            self._draw_popup_mappe()
+        if self.popup:
+            self._draw_popup()
 
     def on_mouse_motion(self, x, y, dx, dy):
         """Gestisce il movimento del mouse"""
-        if self.popupGioca:
+        if self.popup:
             for button in self.popup_buttons:
-                button.on_hover(x,y)
+                print(button.on_hover(x,y))
         else:
             for button in self.buttons:
                 button.on_hover(x, y)
@@ -182,13 +166,12 @@ class MenuScreen(arcade.View):
 
     def on_mouse_press(self, x, y, button, modifiers):
         """Gestisce il click del mouse"""
-        if self.popupGioca:
+        if self.popup:
             for btn in self.popup_buttons:
                 btn.on_click(x, y)
         else:
             for btn in self.buttons:
                 btn.on_click(x, y)
-
 
     def _draw_intro(self):
         """Disegna lo stato INTRO"""
@@ -203,6 +186,9 @@ class MenuScreen(arcade.View):
         """Disegna lo stato BUTTONS"""
         if not self.fadeManager.is_fading:
             self.scene.draw()
-            if not self.popupGioca:
+            if not self.popup:
                 for button in self.buttons:
+                    button.draw()
+            else:
+                for button in self.popup_buttons:
                     button.draw()
