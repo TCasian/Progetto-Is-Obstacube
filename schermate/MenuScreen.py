@@ -27,11 +27,7 @@ class MenuScreen(arcade.View):
     def on_show_view(self):
         """Chiamato solo la prima volta quando viene creata la view"""
         self._configura_stato()
-
-        # Carica la mappa
         self.scene = arcade.Scene.from_tilemap(arcade.load_tilemap("Media/mappe/mappa_intro.tmx", scaling=1.0))
-
-        # Carica il logo
         self.logo_sprite = arcade.Sprite("Media/Img/Logo.png", 1)
 
     def _configura_stato(self):
