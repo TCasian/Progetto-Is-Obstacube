@@ -86,22 +86,25 @@ class MenuScreen(arcade.View):
 
     def _draw_popup(self):
         """Disegna il popup sopra il menu"""
-        left = self.window.width // 4
-        right = self.window.width * 3 // 4
-        bottom = self.window.height // 4
-        top = self.window.height * 3 // 4
+        popup_width = self.window.width // 2 - 100
+        popup_height = self.window.height // 2 - 120
+        left = (self.window.width - popup_width) // 2
+        right = left + popup_width
+        bottom = (self.window.height - popup_height) // 2
+        top = bottom + popup_height
 
+        # Disegna lo sfondo del popup
         arcade.draw_lrbt_rectangle_filled(left, right, bottom, top, arcade.color.WHITE)
 
         popup_buttons_data = [
-            ("Standard", lambda: print("Standard")),
-            ("AI", lambda: print("AI")),
-        ]
+                ("Standard", lambda: print("Standard")),
+                ("AI", lambda: print("AI")),
+            ]
 
         self.popup_buttons = []
         button_height = 50
-        button_spacing = 20
-        start_y = (self.window.height // 2) - (len(popup_buttons_data) * (button_height + button_spacing)) // 2
+        button_spacing = 40
+        start_y = (self.window.height // 2) - (len(popup_buttons_data) * (button_height + button_spacing)) // 2 + 50
 
         for i, (label, callback) in enumerate(popup_buttons_data):
             x = self.window.width // 2
@@ -123,7 +126,6 @@ class MenuScreen(arcade.View):
             )
 
             self.popup_buttons.append(button)
-
         for button in self.popup_buttons:
             button.draw()
 
@@ -148,6 +150,7 @@ class MenuScreen(arcade.View):
         for button in self.buttons:
             button.draw()
 
+
         if self.popup:
             self._draw_popup()
 
@@ -155,7 +158,7 @@ class MenuScreen(arcade.View):
         """Gestisce il movimento del mouse"""
         if self.popup:
             for button in self.popup_buttons:
-                button.on_hover(x,y)
+                print(button.on_hover(x,y))
         else:
             for button in self.buttons:
                 button.on_hover(x, y)
@@ -185,4 +188,7 @@ class MenuScreen(arcade.View):
             self.scene.draw()
             if not self.popup:
                 for button in self.buttons:
+                    button.draw()
+            else:
+                for button in self.popup_buttons:
                     button.draw()
