@@ -29,7 +29,7 @@ class MenuScreen(arcade.View):
         self._configura_stato()
         self.scene = arcade.Scene.from_tilemap(arcade.load_tilemap("Media/mappe/mappa_intro.tmx", scaling=1.0))
         self.logo_sprite = arcade.Sprite("Media/Img/Logo.png", 1)
-
+        #
     def _configura_stato(self):
         """Configura le cose base quando si cambia lo stato tipo background, musica ecc."""
         self.buttons = []  # Reset dei bottoni
