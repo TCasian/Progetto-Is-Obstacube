@@ -22,7 +22,7 @@ class MenuScreen(arcade.View):
         self.popup = False
         self.buttons = []
         self.popup_buttons = []
-        self.debug = False
+        self.debug = True
 
     def on_show_view(self):
         """Chiamato solo la prima volta quando viene creata la view"""
@@ -46,9 +46,9 @@ class MenuScreen(arcade.View):
 
     def _create_buttons(self):
         """Crea i bottoni e li aggiunge a Uimanager"""
-        button_height = 50
-        button_width = 250
-        button_spacing = 30
+        button_height = 60
+        button_width = 350
+        button_spacing = 40
 
         buttons_data = [
             ("Esci ", lambda: arcade.exit()),
@@ -60,7 +60,7 @@ class MenuScreen(arcade.View):
         ]
 
         total_height = len(buttons_data) * (button_height + button_spacing)
-        start_y = (self.window.height - total_height) // 2
+        start_y = (self.window.height - total_height) // 2 + 50
 
         for i, (label, callback) in enumerate(buttons_data):
             x = self.window.width // 2
