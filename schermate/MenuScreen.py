@@ -20,6 +20,7 @@ class MenuScreen(arcade.View):
         arcade.enable_timings()
         self.fadeManager = Fd.FadeManager(0.015)
         self.popup = False
+        self.popupMappe = False
         self.buttons = []
         self.popup_buttons = []
         self.debug = True
@@ -54,7 +55,7 @@ class MenuScreen(arcade.View):
             ("Esci ", lambda: arcade.exit()),
             ("Impostazioni ", lambda: self.window.show_view(ImpostazioniScreen())),
             ("Shop", lambda: self.window.show_view(ShopScreen())),
-            ("Mappe ", lambda: self.window.show_view(MappeScreen())),
+            ("Mappe ", lambda: self._on_click_mappe()),
             ("Gioca ", lambda: self._on_click_gioca()),
 
         ]
@@ -129,9 +130,24 @@ class MenuScreen(arcade.View):
         for button in self.popup_buttons:
             button.draw()
 
+    def _draw_popup_mappe(self):
+        left = self.window.width // 4
+        right = self.window.width * 3 // 4
+        bottom = self.window.height // 4
+        top = self.window.height * 3 // 4
+
+        x = self.window.width // 2
+        y = self.window.height // 2
+        arcade.draw_lrbt_rectangle_filled(left, right, bottom, top, arcade.color.WHITE)
+        arcade.draw_text("Sezione non disponibile", x, y, arcade.color.ORANGE, font_size=30, anchor_x="center")
+
     def _on_click_gioca(self):
         """Callback per il bottone 'Gioca'"""
         self.popup = True
+
+    def _on_click_mappe(self):
+        """Callback per il bottone 'Mappe'"""
+        self.popupMappe = True
 
     def on_update(self, dt):
         """Chiamato ogni frame per aggiornare la logica"""
@@ -153,6 +169,9 @@ class MenuScreen(arcade.View):
 
         if self.popup:
             self._draw_popup()
+
+        if self.popupMappe:
+            self._draw_popup_mappe()
 
     def on_mouse_motion(self, x, y, dx, dy):
         """Gestisce il movimento del mouse"""
