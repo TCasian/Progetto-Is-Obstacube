@@ -11,6 +11,7 @@ from schermate.ImpostazioniScreen import ImpostazioniScreen
 from utils.RoundedButtons import RoundedButton
 
 
+
 class MenuScreen(arcade.View):
     INTRO, BUTTONS = "intro", "buttons"
 
@@ -28,7 +29,28 @@ class MenuScreen(arcade.View):
     def on_show_view(self):
         """Chiamato solo la prima volta quando viene creata la view"""
         self._configura_stato()
-        self.scene = arcade.Scene.from_tilemap(arcade.load_tilemap("Media/mappe/mappa_intro.tmx", scaling=1.0))
+        # Ottieni la risoluzione della finestra
+        window_width = arcade.get_window().width
+        window_height = arcade.get_window().height
+
+        # Carica la mappa
+        tilemap = arcade.load_tilemap("Media/mappe/mappa_intro.tmx", scaling=1.0)
+
+        # Calcola il fattore di scaling in base alla risoluzione della finestra
+        map_width = tilemap.width * tilemap.tile_width
+        map_height = tilemap.height * tilemap.tile_height
+
+        scale_x = window_width / map_width
+        scale_y = window_height / map_height
+
+        # Usa il fattore di scaling più piccolo per non deformare la mappa
+        scaling_factor = max(scale_x, scale_y)
+
+        # Crea la scena con il nuovo fattore di scaling
+        self.scene = arcade.Scene.from_tilemap(arcade.load_tilemap("Media/mappe/mappa_intro.tmx", scaling=scaling_factor))
+
+
+
         self.logo_sprite = arcade.Sprite("Media/Img/Logo.png", 1)
         #
     def _configura_stato(self):
@@ -53,7 +75,7 @@ class MenuScreen(arcade.View):
 
         buttons_data = [
             ("Esci ", lambda: arcade.exit()),
-            ("Impostazioni ", lambda: self.window.show_view(ImpostazioniScreen())),
+            ("Impostazioni ", lambda: self.window.show_view(ImpostazioniScreen(self._go_to_menu))),
             ("Shop", lambda: self._on_click_non_disponibile()),
             ("Mappe ", lambda: self._on_click_non_disponibile()),
             ("Gioca ", lambda: self._on_click_gioca()),
@@ -236,3 +258,7 @@ class MenuScreen(arcade.View):
             else:
                 for button in self.popup_buttons:
                     button.draw()
+
+    def _go_to_menu(self):
+        self.window.show_view(self)
+
