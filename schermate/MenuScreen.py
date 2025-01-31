@@ -18,7 +18,6 @@ class MenuScreen(arcade.View):
     def __init__(self):
         super().__init__()
         self.state = self.INTRO
-        arcade.enable_timings()
         self.fadeManager = Fd.FadeManager(0.015)
         self.popup = False
         self.popupNonDisponibile = False
@@ -32,6 +31,7 @@ class MenuScreen(arcade.View):
         # Ottieni la risoluzione della finestra
         window_width = arcade.get_window().width
         window_height = arcade.get_window().height
+        self.window.show_view(GiocoScreen())
 
         # Carica la mappa
         tilemap = arcade.load_tilemap("Media/mappe/mappa_intro.tmx", scaling=1.0)
@@ -119,37 +119,36 @@ class MenuScreen(arcade.View):
         # Disegna lo sfondo del popup
         arcade.draw_lrbt_rectangle_filled(left, right, bottom, top, arcade.color.WHITE)
 
-        if not self.popup_buttons:
-            popup_buttons_data = [
-                    ("Standard", lambda: print("Standard")),
-                    ("AI", lambda: print("AI")),
+        popup_buttons_data = [
+                ("Standard", lambda: self.window.show_view(GiocoScreen())),
+                ("AI", lambda: print("AI")),
             ]
 
-            self.popup_buttons = []
-            button_height = 50
-            button_spacing = 40
-            start_y = (self.window.height // 2) - (len(popup_buttons_data) * (button_height + button_spacing)) // 2 + 50
+        self.popup_buttons = []
+        button_height = 50
+        button_spacing = 40
+        start_y = (self.window.height // 2) - (len(popup_buttons_data) * (button_height + button_spacing)) // 2 + 50
 
-            for i, (label, callback) in enumerate(popup_buttons_data):
-                x = self.window.width // 2
-                y = start_y + i * (button_height + button_spacing)
+        for i, (label, callback) in enumerate(popup_buttons_data):
+            x = self.window.width // 2
+            y = start_y + i * (button_height + button_spacing)
 
-                button = RoundedButton(
-                    text=label,
-                    center_x=x,
-                    center_y=y,
-                    width=250,
-                    height=button_height,
-                    bg_color=(217, 147, 8),
-                    bg_hover=(247, 178, 38),
-                    text_color=arcade.color.WHITE,
-                    text_size=20,
-                    hover_text_color=arcade.color.WHITE,
-                    callback=callback,
-                    bold=True
-                )
+            button = RoundedButton(
+                text=label,
+                center_x=x,
+                center_y=y,
+                width=250,
+                height=button_height,
+                bg_color=(217, 147, 8),
+                bg_hover=(247, 178, 38),
+                text_color=arcade.color.WHITE,
+                text_size=20,
+                hover_text_color=arcade.color.WHITE,
+                callback=callback,
+                bold=True
+            )
 
-                self.popup_buttons.append(button)
+            self.popup_buttons.append(button)
         for button in self.popup_buttons:
             button.draw()
 
@@ -196,7 +195,6 @@ class MenuScreen(arcade.View):
     def _close_non_disponibile_popup(self):
         """Chiude il popup delle mappe."""
         self.popupNonDisponibile = False
-        self.popup_buttons.clear()
 
     def on_update(self, dt):
         """Chiamato ogni frame per aggiornare la logica"""
@@ -224,10 +222,9 @@ class MenuScreen(arcade.View):
 
     def on_mouse_motion(self, x, y, dx, dy):
         """Gestisce il movimento del mouse"""
-        if self.popup or self.popupNonDisponibile:
+        if self.popup:
             for button in self.popup_buttons:
-                button.on_hover(x,y)
-                print(button.text)
+                print(button.on_hover(x,y))
         else:
             for button in self.buttons:
                 button.on_hover(x, y)
