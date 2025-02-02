@@ -1,10 +1,12 @@
 import arcade
 
 class RoundedButton:
-    def __init__(self, text, center_x, center_y, width, height, bg_color, bg_hover, text_color, hover_text_color, text_size, bold, callback=None):
+    def __init__(self, text, center_x, center_y, width, height, bg_color, bg_hover, text_color, hover_text_color, text_size, bold, callback=None, bg_selected = None):
         self.text = text
         self.center_x = center_x
         self.center_y = center_y
+        self.original_x = center_x
+        self.original_y = center_y
         self.width = width
         self.height = height
         self.bg_color = bg_color
@@ -15,26 +17,26 @@ class RoundedButton:
         self.callback = callback
         self.is_hovered = False
         self.bold = bold
-        self.corner_radius = 10  # Raggio degli angoli arrotondati
+        self.corner_radius = 10
+        self.bg_selected = bg_selected
+        self.selected = False
 
     def draw(self):
-        # Calcola le coordinate del bottone
         left = self.center_x - self.width / 2
         right = self.center_x + self.width / 2
         bottom = self.center_y - self.height / 2
         top = self.center_y + self.height / 2
 
-        # Scegli il colore in base allo stato hover
         current_bg_color = self.bg_hover if self.is_hovered else self.bg_color
         current_text_color = self.hover_text_color if self.is_hovered else self.text_color
 
-        # Disegna il corpo del bottone con angoli arrotondati
+        if self.selected and self.callback is not None:
+            current_bg_color = self.bg_selected
+
         self._draw_rounded_rectangle(left, right, bottom, top, current_bg_color)
 
-        # Disegna il bordo esterno nero
         self._draw_border(left, right, bottom, top, current_bg_color)
 
-        # Disegna il testo centrato
         arcade.draw_text(
             self.text, self.center_x, self.center_y,
             current_text_color, font_size=self.text_size,
@@ -42,8 +44,6 @@ class RoundedButton:
         )
 
     def _draw_rounded_rectangle(self, left, right, bottom, top, color):
-        """Disegna il corpo del bottone con angoli arrotondati"""
-        # Parte centrale rettangolare
         arcade.draw_lrbt_rectangle_filled(
             left + self.corner_radius, right - self.corner_radius,
             bottom, top, color
@@ -75,8 +75,6 @@ class RoundedButton:
         )
 
     def _draw_border(self, left, right, bottom, top, color):
-        """Disegna solo il bordo esterno nero"""
-        # Parte centrale rettangolare del bordo
         arcade.draw_lrbt_rectangle_outline(
             left + self.corner_radius, right - self.corner_radius,
             bottom, top, arcade.color.BLACK, 2
@@ -121,10 +119,13 @@ class RoundedButton:
 
     def check_collision(self, x, y):
         """Controlla se il punto (x, y) è dentro il bottone"""
-        return (
-            self.center_x - self.width / 2 <= x <= self.center_x + self.width / 2
-            and self.center_y - self.height / 2 <= y <= self.center_y + self.height / 2
+        a =  (
+            self.original_x - self.width / 2 <= x <= self.original_x + self.width / 2
+            and self.original_y- self.height / 2 <= y <= self.original_y + self.height / 2
         )
+        #print(f"{self.original_x} {self.original_y} == {x} {y} per {self.text} è {a}")
+
+        return a
 
     def on_click(self, x, y):
         """Chiama la funzione callback se viene premuto il pulsante"""

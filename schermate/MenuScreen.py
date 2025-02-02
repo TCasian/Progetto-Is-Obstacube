@@ -15,15 +15,17 @@ from utils.RoundedButtons import RoundedButton
 class MenuScreen(arcade.View):
     INTRO, BUTTONS = "intro", "buttons"
 
-    def __init__(self):
+    def __init__(self, jump=False):
         super().__init__()
-        self.state = self.INTRO
+        self.state = self.BUTTONS if jump else self.INTRO
         self.fadeManager = Fd.FadeManager(0.015)
         self.popup = False
         self.popupNonDisponibile = False
         self.buttons = []
         self.popup_buttons = []
-        self.debug = True
+        self.debug = False
+        self.jump = jump
+
 
     def on_show_view(self):
         """Chiamato solo la prima volta quando viene creata la view"""
@@ -31,10 +33,11 @@ class MenuScreen(arcade.View):
         # Ottieni la risoluzione della finestra
         window_width = arcade.get_window().width
         window_height = arcade.get_window().height
-        self.window.show_view(GiocoScreen())
+        #self.window.show_view(MappeScreen())
+
 
         # Carica la mappa
-        tilemap = arcade.load_tilemap("Media/mappe/mappa_intro.tmx", scaling=1.0)
+        tilemap = arcade.load_tilemap("Media/mappe/Intro.tmx", scaling=1.0)
 
         # Calcola il fattore di scaling in base alla risoluzione della finestra
         map_width = tilemap.width * tilemap.tile_width
@@ -46,24 +49,22 @@ class MenuScreen(arcade.View):
         # Usa il fattore di scaling più piccolo per non deformare la mappa
         scaling_factor = max(scale_x, scale_y)
 
-        # Crea la scena con il nuovo fattore di scaling
-        self.scene = arcade.Scene.from_tilemap(arcade.load_tilemap("Media/mappe/mappa_intro.tmx", scaling=scaling_factor))
+        self.scene = arcade.Scene.from_tilemap(arcade.load_tilemap("Media/mappe/Intro.tmx", scaling=scaling_factor))
+        if not self.jump:
+            self.logo_sprite = arcade.Sprite("Media/Img/Logo.png", 1)
 
-
-
-        self.logo_sprite = arcade.Sprite("Media/Img/Logo.png", 1)
-        #
     def _configura_stato(self):
         """Configura le cose base quando si cambia lo stato tipo background, musica ecc."""
         self.buttons = []  # Reset dei bottoni
 
         if self.state == self.INTRO:
             arcade.set_background_color(arcade.color.WHITE)
-            self.fadeManager.start_fade((255, 255, 255, 0), (0, 0, 0, 255))  # Fade da nero a trasparente
+            if not self.jump:
+                self.fadeManager.start_fade((255, 255, 255, 0), (0, 0, 0, 255))  # Fade da nero a trasparente
             self.draw_state = self._draw_intro
         elif self.state == self.BUTTONS:
-            if not self.debug:
-                sleep(4)
+            if not self.debug and not self.jump:
+                sleep(3)
             self._create_buttons()
             self.draw_state = self._draw_buttons
 
@@ -77,7 +78,7 @@ class MenuScreen(arcade.View):
             ("Esci ", lambda: arcade.exit()),
             ("Impostazioni ", lambda: self.window.show_view(ImpostazioniScreen(self._go_to_menu))),
             ("Shop", lambda: self._on_click_non_disponibile()),
-            ("Mappe ", lambda: self._on_click_non_disponibile()),
+            ("Mappe ", lambda: self.window.show_view(MappeScreen())),
             ("Gioca ", lambda: self._on_click_gioca()),
 
         ]
@@ -103,7 +104,6 @@ class MenuScreen(arcade.View):
                 callback=callback,
                 bold=True
             )
-
 
             self.buttons.append(button)
 
@@ -240,7 +240,7 @@ class MenuScreen(arcade.View):
                 btn.on_click(x, y)
 
     def _draw_intro(self):
-        """Disegna lo stato INTRO"""
+
         if not self.fadeManager.is_fading:
             self.logo_sprite.center_x = self.window.width / 2
             self.logo_sprite.center_y = self.window.height / 2
