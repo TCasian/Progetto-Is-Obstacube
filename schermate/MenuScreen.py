@@ -15,7 +15,7 @@ from utils.RoundedButtons import RoundedButton
 class MenuScreen(arcade.View):
     INTRO, BUTTONS = "intro", "buttons"
 
-    def __init__(self, jump=False):
+    def __init__(self, jump=True):
         super().__init__()
         self.state = self.BUTTONS if jump else self.INTRO
         self.fadeManager = Fd.FadeManager(0.015)
@@ -33,7 +33,6 @@ class MenuScreen(arcade.View):
         # Ottieni la risoluzione della finestra
         window_width = arcade.get_window().width
         window_height = arcade.get_window().height
-        #self.window.show_view(MappeScreen())
 
 
         # Carica la mappa
@@ -48,10 +47,12 @@ class MenuScreen(arcade.View):
 
         # Usa il fattore di scaling più piccolo per non deformare la mappa
         scaling_factor = max(scale_x, scale_y)
-
+        print(scaling_factor)
+        scaling_factor = 1.3
         self.scene = arcade.Scene.from_tilemap(arcade.load_tilemap("Media/mappe/Intro.tmx", scaling=scaling_factor))
         if not self.jump:
-            self.logo_sprite = arcade.Sprite("Media/Img/Logo.png", 1)
+            self.logo_sprite = arcade.Sprite("Media/Img/Logo.png", scaling_factor)
+            print(f"{self.logo_sprite.scale}")
 
     def _configura_stato(self):
         """Configura le cose base quando si cambia lo stato tipo background, musica ecc."""

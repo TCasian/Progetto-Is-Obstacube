@@ -5,10 +5,10 @@ from Persistenza.ImpostazioniJSON import load_settings, save_settings
 from Logica.ImpostazioniLogica import ImpostazioniLogica
 class ImpostazioniScreen(arcade.View):
 
-    def __init__(self, menu_callback=None):
+    def __init__(self, callback=None):
         super().__init__()
-        self.menu_callback = menu_callback
         # Posizione dei checkbox
+        self.callback = callback
         self.fullscreen_checkbox_pos = (self.window.width / 2 + 80, self.window.height / 2 + 20)
         self.audio_checkbox_pos = (self.window.width / 2 + 80, self.window.height / 2 - 20)
         self.settings = ImpostazioniLogica()
@@ -20,18 +20,25 @@ class ImpostazioniScreen(arcade.View):
         self.audio_checkbox_pos = (self.window.width / 2 + 80, self.window.height / 2 - 20)
 
     def on_resize(self, width, height):
+
         """Aggiornare la posizione degli elementi quando la finestra cambia dimensione."""
         self.update_checkbox_positions()
+        self.setup()
 
     def on_update(self, delta_time):
         pass
 
     def on_show_view(self):
         arcade.set_background_color(arcade.color.DARK_GRAY)
+        self.setup()
+
+    def setup(self):
+        self.camera = arcade.camera.Camera2D()
 
 
     def on_draw(self):
         self.clear()
+        self.camera.use()
         arcade.draw_text("Impostazioni", self.window.width / 2, self.window.height - 50, arcade.color.WHITE,font_size=30, anchor_x="center")
         # Draw checkbox labels and state
         fullscreen_text = "Fullscreen"
@@ -41,6 +48,7 @@ class ImpostazioniScreen(arcade.View):
         arcade.draw_text(fullscreen_text, self.window.width / 2 - 100, self.window.height / 2 + 20, arcade.color.WHITE,20, anchor_x="center")
         arcade.draw_text(audio_text, self.window.width / 2 - 100, self.window.height / 2 - 20, arcade.color.WHITE, 20,anchor_x="center")
 
+        self.update_checkbox_positions()
         # Draw checkbox states (checked/unchecked)
         fullscreen_checkbox = "✓" if self.settings.is_fullscreen() else "✗"
         audio_checkbox = "✓" if self.settings.is_audio() else "✗"
@@ -63,4 +71,4 @@ class ImpostazioniScreen(arcade.View):
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.ESCAPE:
-            self.menu_callback()
+            self.callback()

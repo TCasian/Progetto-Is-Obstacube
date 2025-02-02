@@ -1,6 +1,8 @@
 import arcade
 import time
 
+from Logica.ImpostazioniLogica import ImpostazioniLogica
+from schermate.ImpostazioniScreen import ImpostazioniScreen
 from utils.RoundedButtons import RoundedButton
 from utils.RectangleBorder import RectangleBorder
 
@@ -83,6 +85,7 @@ class Player(arcade.Sprite):
 class GiocoScreen(arcade.View):
     def __init__(self):
         super().__init__()
+
         self.tilemap = arcade.load_tilemap("Media/mappe/test.tmx", scaling=TILE_SCALING)
         self.scene = arcade.Scene.from_tilemap(self.tilemap)
 
@@ -106,10 +109,12 @@ class GiocoScreen(arcade.View):
         self.tile_grid = self._build_tile_grid()
         self.start_pause = 0
 
-        self._create_buttons()
+
         self.finish = None
 
-
+    def on_show_view(self):
+        self.camera =arcade.camera.Camera2D()
+        self._create_buttons()
 
     def on_draw(self):
         self.clear()
@@ -209,11 +214,15 @@ class GiocoScreen(arcade.View):
         elif key == arcade.key.D:
             self.player.change_x = PLAYER_SPEED
         elif key == arcade.key.ESCAPE:
-            if self.start_pause == 0:
+            if self.finish == "Gameover":
+                pass
+            elif self.start_pause == 0:
                 self.start_pause = time.time()
             else:
                 self.start_time += int(time.time() - self.start_pause)
                 self.start_pause = 0
+
+
         elif key == arcade.key.SPACE:
             self.print_player_grid()
 
@@ -242,7 +251,7 @@ class GiocoScreen(arcade.View):
         buttons_data = [
             ("Torna al menu ", lambda:  self._go_menu()),
             ("Come giocare ", lambda: print("aa")),
-            ("Impostazioni ", lambda: self.window.show_view(ImpostazioniScreen(self._go_to_menu))),
+            ("Impostazioni ", lambda: self.window.show_view(ImpostazioniScreen(self._return))),
             ("Torna al gioco ", lambda: setattr(self, "start_pause", 0)),
 
         ]
@@ -439,7 +448,7 @@ class GiocoScreen(arcade.View):
 
     def _draw_finish(self):
         y_offset = self.window.height - 30
-        pausa_width, pausa_height = 800 - 8, 500
+        pausa_width, pausa_height = 800 - 8, 520
         pausa_x = self.camera.position[0]
         pausa_y = y_offset - pausa_height + 120
         tempo = RectangleBorder(
@@ -491,8 +500,9 @@ class GiocoScreen(arcade.View):
 
     def _go_menu(self):
         from schermate.MenuScreen import MenuScreen
-
         self.camera.position =(self.window.width / 2, self.window.height / 2)
         self.camera.use()
-
         self.window.show_view(MenuScreen(True))
+
+    def _return(self):
+        self.window.show_view(self)
