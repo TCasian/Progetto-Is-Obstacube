@@ -85,8 +85,7 @@ class Player(arcade.Sprite):
 class GiocoScreen(arcade.View):
     def __init__(self):
         super().__init__()
-
-        self.tilemap = arcade.load_tilemap("Media/mappe/test.tmx", scaling=TILE_SCALING)
+        self.tilemap = arcade.load_tilemap("Media/mappe/test.tmx", TILE_SCALING if not ImpostazioniLogica().is_fullscreen() else 1.3)
         self.scene = arcade.Scene.from_tilemap(self.tilemap)
 
         self.ostacoli = self.scene["ostacoli"] if "ostacoli" in self.scene else arcade.SpriteList()
@@ -102,7 +101,7 @@ class GiocoScreen(arcade.View):
         self.danni = self.scene["danni"] if "danni" in self.scene else arcade.SpriteList()
 
         self.monete.rescale(1.3)
-        self.player = Player(100, 100)
+        self.player = Player(150, 150)
         self.start_time = time.time()
 
         self.camera = arcade.camera.Camera2D()
@@ -285,7 +284,7 @@ class GiocoScreen(arcade.View):
         self.finish_buttons_gameover.append(RoundedButton(
             text="Riprova!",
             center_x=self.camera.position[0] - 200,
-            center_y=self.camera.position[1] - 200,
+            center_y=self.camera.position[1] - (200 if not ImpostazioniLogica().is_fullscreen() else 180),
             width=button_width,
             height=button_height,
             bg_color=(240, 255, 240),
@@ -300,7 +299,7 @@ class GiocoScreen(arcade.View):
         self.finish_buttons_gameover.append(RoundedButton(
             text="Torna al menu!",
             center_x=self.camera.position[0] + 200,
-            center_y=self.camera.position[1] - 200,
+            center_y=self.camera.position[1] - (200 if not ImpostazioniLogica().is_fullscreen() else 180),
             width=button_width,
             height=button_height,
             bg_color=(240, 255, 240),

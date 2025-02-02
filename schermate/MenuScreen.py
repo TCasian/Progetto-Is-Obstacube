@@ -1,6 +1,8 @@
 import arcade
 from arcade import SpriteList
 from arcade.gui import UIManager, UIFlatButton
+
+from Logica.ImpostazioniLogica import ImpostazioniLogica
 from schermate.AiScreen import AiScreen
 from schermate.GiocoScreen import GiocoScreen
 from schermate.MappeScreen import MappeScreen
@@ -30,29 +32,11 @@ class MenuScreen(arcade.View):
     def on_show_view(self):
         """Chiamato solo la prima volta quando viene creata la view"""
         self._configura_stato()
-        # Ottieni la risoluzione della finestra
-        window_width = arcade.get_window().width
-        window_height = arcade.get_window().height
 
-
-        # Carica la mappa
-        tilemap = arcade.load_tilemap("Media/mappe/Intro.tmx", scaling=1.0)
-
-        # Calcola il fattore di scaling in base alla risoluzione della finestra
-        map_width = tilemap.width * tilemap.tile_width
-        map_height = tilemap.height * tilemap.tile_height
-
-        scale_x = window_width / map_width
-        scale_y = window_height / map_height
-
-        # Usa il fattore di scaling più piccolo per non deformare la mappa
-        scaling_factor = max(scale_x, scale_y)
-        print(scaling_factor)
-        scaling_factor = 1.3
-        self.scene = arcade.Scene.from_tilemap(arcade.load_tilemap("Media/mappe/Intro.tmx", scaling=scaling_factor))
+        self.scene = arcade.Scene.from_tilemap(arcade.load_tilemap("Media/mappe/Intro.tmx", 1 if not ImpostazioniLogica().is_fullscreen() else 1.3))
         if not self.jump:
-            self.logo_sprite = arcade.Sprite("Media/Img/Logo.png", scaling_factor)
-            print(f"{self.logo_sprite.scale}")
+            self.logo_sprite = arcade.Sprite("Media/Img/Logo.png", 1 if not ImpostazioniLogica().is_fullscreen() else 1.3)
+
 
     def _configura_stato(self):
         """Configura le cose base quando si cambia lo stato tipo background, musica ecc."""
