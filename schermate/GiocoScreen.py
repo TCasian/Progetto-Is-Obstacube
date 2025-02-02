@@ -32,14 +32,14 @@ class Player(arcade.Sprite):
 
     def rem_health(self, val):
         temp = self.health - val
-        if not temp < 0 and time.time() - self.last_danno >= 0.5:
+        if not temp < 0 and time.time() - self.last_danno >= 0.3:
             self.health = temp
             self.last_danno = time.time()
 
 
 
     def draw(self):
-        immune = (time.time() - self.last_danno <= 0.5)
+        immune = (time.time() - self.last_danno <= 0.3)
         self.left = self.center_x - self.width // 2
         self.right = self.center_x + self.width // 2
         self.bottom = self.center_y - self.height // 2
@@ -56,16 +56,14 @@ class Player(arcade.Sprite):
         player_x = int(self.center_x // TILE_WIDTH)
         player_y = int(self.center_y // TILE_HEIGHT)
 
-        # Calcola quante celle della griglia sono coperte dal giocatore
         player_width_tiles = int(self.width // TILE_WIDTH)
         player_height_tiles = int(self.height // TILE_HEIGHT)
 
-        # Definisci i limiti della griglia
         half_grid = grid_size // 2
-        start_x = max(0, player_x - half_grid)  # Inizia a metà griglia a sinistra del giocatore
-        end_x = min(len(tile_grid[0]) - 1, player_x + half_grid)  # Termina a metà griglia a destra del giocatore
-        start_y = max(0, player_y - half_grid)  # Inizia a metà griglia sotto il giocatore
-        end_y = min(len(tile_grid) - 1, player_y + half_grid)  # Termina a metà griglia sopra il giocatore
+        start_x = max(0, player_x - half_grid)
+        end_x = min(len(tile_grid[0]) - 1, player_x + half_grid)
+        start_y = max(0, player_y - half_grid)
+        end_y = min(len(tile_grid) - 1, player_y + half_grid)
 
         grid = []
         for y in range(start_y, end_y + 1):

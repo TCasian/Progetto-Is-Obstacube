@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tileset version="1.10" tiledversion="1.11.1" name="coin" tilewidth="32" tileheight="32" tilecount="32" columns="16">
- <image source="../../../../../../Downloads/coin_gold (1).png" width="512" height="64"/>
+ <image source="coin_gold.png" width="512" height="64"/>
  <tile id="0">
   <animation>
    <frame tileid="0" duration="100"/>

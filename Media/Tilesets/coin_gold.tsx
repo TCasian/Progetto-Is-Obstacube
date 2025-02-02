@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tileset version="1.10" tiledversion="1.11.1" name="coin_gold" tilewidth="32" tileheight="32" tilecount="8" columns="8">
- <image source="../../../../../../Downloads/coin_gold.png" width="256" height="32"/>
+ <image source="coin_gold.png" width="256" height="32"/>
  <tile id="0">
   <properties>
    <property name="tipo" value="moneta"/>
