@@ -22,10 +22,10 @@ class RoundedButton:
         self.selected = False
 
     def draw(self):
-        left = self.center_x - self.width / 2
-        right = self.center_x + self.width / 2
-        bottom = self.center_y - self.height / 2
-        top = self.center_y + self.height / 2
+        left = self.center_x - self.width *0.5
+        right = self.center_x + self.width *0.5
+        bottom = self.center_y - self.height *0.5
+        top = self.center_y + self.height *0.5
 
         current_bg_color = self.bg_hover if self.is_hovered else self.bg_color
         current_text_color = self.hover_text_color if self.is_hovered else self.text_color
@@ -120,8 +120,8 @@ class RoundedButton:
     def check_collision(self, x, y):
         """Controlla se il punto (x, y) è dentro il bottone"""
         a =  (
-            self.original_x - self.width / 2 <= x <= self.original_x + self.width / 2
-            and self.original_y- self.height / 2 <= y <= self.original_y + self.height / 2
+            self.original_x - self.width *0.5 <= x <= self.original_x + self.width *0.5
+            and self.original_y- self.height *0.5 <= y <= self.original_y + self.height *0.5
         )
         #print(f"{self.original_x} {self.original_y} == {x} {y} per {self.text} è {a}")
 

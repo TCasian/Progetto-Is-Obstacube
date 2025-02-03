@@ -69,10 +69,10 @@ class MenuScreen(arcade.View):
         ]
 
         total_height = len(buttons_data) * (button_height + button_spacing)
-        start_y = (self.window.height - total_height) // 2 + 50
+        start_y = (self.window.height - total_height) *0.5 + 50
 
         for i, (label, callback) in enumerate(buttons_data):
-            x = self.window.width // 2
+            x = self.window.width * 0.5
             y = start_y + i * (button_height + button_spacing)
 
             button = RoundedButton(
@@ -94,11 +94,11 @@ class MenuScreen(arcade.View):
 
     def _draw_popup(self):
         """Disegna il popup sopra il menu"""
-        popup_width = self.window.width // 2 - 100
-        popup_height = self.window.height // 2 - 120
-        left = (self.window.width - popup_width) // 2
+        popup_width = self.window.width *0.5 - 100
+        popup_height = self.window.height *0.5 - 120
+        left = (self.window.width - popup_width) *0.5
         right = left + popup_width
-        bottom = (self.window.height - popup_height) // 2
+        bottom = (self.window.height - popup_height) *0.5
         top = bottom + popup_height
 
         # Disegna lo sfondo del popup
@@ -138,20 +138,20 @@ class MenuScreen(arcade.View):
             button.draw()
 
     def _draw_popup_non_disponibile(self):
-        left = self.window.width // 4
-        right = self.window.width * 3 // 4
-        bottom = self.window.height // 4
-        top = self.window.height * 3 // 4
+        left = self.window.width *0.25
+        right = self.window.width * 3 *0.25
+        bottom = self.window.height *0.25
+        top = self.window.height * 3 *0.25
 
-        x = self.window.width // 2
-        y = self.window.height // 2
+        x = self.window.width *0.5
+        y = self.window.height *0.5
         arcade.draw_lrbt_rectangle_filled(left, right, bottom, top, arcade.color.WHITE)
         arcade.draw_text("Sezione non disponibile", x, y, arcade.color.ORANGE, font_size=30, anchor_x="center")
         if not any(isinstance(btn, RoundedButton) and btn.text == "X" for btn in self.popup_buttons):
             self.close_popup_button = RoundedButton(
                 text="X",
-                center_x=self.window.width * 3 // 4 - 20,
-                center_y=self.window.height * 3 // 4 - 20,
+                center_x=self.window.width * 3 *0.25 - 20,
+                center_y=self.window.height * 3 *0.25 - 20,
                 width=40,
                 height=40,
                 bg_color=(200, 0, 0),
@@ -227,8 +227,8 @@ class MenuScreen(arcade.View):
     def _draw_intro(self):
 
         if not self.fadeManager.is_fading:
-            self.logo_sprite.center_x = self.window.width / 2
-            self.logo_sprite.center_y = self.window.height / 2
+            self.logo_sprite.center_x = self.window.width *0.5
+            self.logo_sprite.center_y = self.window.height *0.5
             arcade.draw_texture_rect(self.logo_sprite.texture, self.logo_sprite.rect)
             self.state = self.BUTTONS
             self.timerIntro = True

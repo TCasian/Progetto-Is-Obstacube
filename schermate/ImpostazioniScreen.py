@@ -9,15 +9,15 @@ class ImpostazioniScreen(arcade.View):
         super().__init__()
         # Posizione dei checkbox
         self.callback = callback
-        self.fullscreen_checkbox_pos = (self.window.width / 2 + 80, self.window.height / 2 + 20)
-        self.audio_checkbox_pos = (self.window.width / 2 + 80, self.window.height / 2 - 20)
+        self.fullscreen_checkbox_pos = (self.window.width *0.5 + 80, self.window.height *0.5 + 20)
+        self.audio_checkbox_pos = (self.window.width *0.5 + 80, self.window.height *0.5 - 20)
         self.settings = ImpostazioniLogica()
         self.update_checkbox_positions()  # Calcola le posizioni iniziali
 
     def update_checkbox_positions(self):
         """Aggiorna le posizioni dei checkbox in base alla dimensione della finestra."""
-        self.fullscreen_checkbox_pos = (self.window.width / 2 + 80, self.window.height / 2 + 20)
-        self.audio_checkbox_pos = (self.window.width / 2 + 80, self.window.height / 2 - 20)
+        self.fullscreen_checkbox_pos = (self.window.width *0.5 + 80, self.window.height *0.5 + 20)
+        self.audio_checkbox_pos = (self.window.width *0.5 + 80, self.window.height *0.5 - 20)
 
     def on_resize(self, width, height):
 
@@ -39,14 +39,14 @@ class ImpostazioniScreen(arcade.View):
     def on_draw(self):
         self.clear()
         self.camera.use()
-        arcade.draw_text("Impostazioni", self.window.width / 2, self.window.height - 50, arcade.color.WHITE,font_size=30, anchor_x="center")
+        arcade.draw_text("Impostazioni", self.window.width *0.5, self.window.height - 50, arcade.color.WHITE,font_size=30, anchor_x="center")
         # Draw checkbox labels and state
         fullscreen_text = "Fullscreen"
         audio_text = "Audio"
 
         # Draw the checkboxes
-        arcade.draw_text(fullscreen_text, self.window.width / 2 - 100, self.window.height / 2 + 20, arcade.color.WHITE,20, anchor_x="center")
-        arcade.draw_text(audio_text, self.window.width / 2 - 100, self.window.height / 2 - 20, arcade.color.WHITE, 20,anchor_x="center")
+        arcade.draw_text(fullscreen_text, self.window.width *0.5 - 100, self.window.height *0.5 + 20, arcade.color.WHITE,20, anchor_x="center")
+        arcade.draw_text(audio_text, self.window.width *0.5 - 100, self.window.height *0.5 - 20, arcade.color.WHITE, 20,anchor_x="center")
 
         self.update_checkbox_positions()
         # Draw checkbox states (checked/unchecked)

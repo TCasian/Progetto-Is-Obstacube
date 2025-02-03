@@ -28,6 +28,9 @@ class Player(arcade.Sprite):
         self.last_danno = 0
 
     def add_health(self, val):
+        if ImpostazioniLogica().is_audio():
+            sound = arcade.Sound("Media/Sounds/health_up_sound.wav")
+            sound.play(volume=0.5)
         temp = self.health + val
         if not temp > self.max_life:
             self.health = temp
@@ -42,10 +45,10 @@ class Player(arcade.Sprite):
 
     def draw(self):
         immune = (time.time() - self.last_danno <= 0.3)
-        self.left = self.center_x - self.width // 2
-        self.right = self.center_x + self.width // 2
-        self.bottom = self.center_y - self.height // 2
-        self.top = self.center_y + self.height // 2
+        self.left = self.center_x - self.width *0.5
+        self.right = self.center_x + self.width *0.5
+        self.bottom = self.center_y - self.height *0.5
+        self.top = self.center_y + self.height *0.5
         color = arcade.color.RED if immune else self.color
         arcade.draw_lrbt_rectangle_filled(self.left, self.right, self.bottom, self.top, color)
 
@@ -61,7 +64,7 @@ class Player(arcade.Sprite):
         player_width_tiles = int(self.width // TILE_WIDTH)
         player_height_tiles = int(self.height // TILE_HEIGHT)
 
-        half_grid = grid_size // 2
+        half_grid = int(grid_size *0.5)
         start_x = max(0, player_x - half_grid)
         end_x = min(len(tile_grid[0]) - 1, player_x + half_grid)
         start_y = max(0, player_y - half_grid)
@@ -202,6 +205,9 @@ class GiocoScreen(arcade.View):
             self.moneteList.append((round(moneta.center_x/self.scaling), round(moneta.center_y/self.scaling)))
             moneta.remove_from_sprite_lists()
             self.player.coins += 1
+            if ImpostazioniLogica().is_audio():
+                sound = arcade.Sound("Media/Sounds/coin_sound.mp3")
+                sound.play(volume=0.5)
             self.tile_grid = self._build_tile_grid()
             print(f"Moneta raccolta! Monete totali: {self.player.coins}")
 
@@ -214,6 +220,9 @@ class GiocoScreen(arcade.View):
 
         if oggetti_colpiti["danni"]:
             self.player.rem_health(1)
+            if ImpostazioniLogica().is_audio():
+                sound = arcade.Sound("Media/Sounds/health_down_sound.mp3")
+                sound.play(volume=0.5)
             if self.player.health <= 0:
                 self.finish = "Gameover"
 
@@ -342,8 +351,8 @@ class GiocoScreen(arcade.View):
         ))
 
     def _muovi_camera(self):
-        screen_center_x = self.player.center_x - (self.window.width / 2)
-        screen_center_y = self.window.height / 2
+        screen_center_x = self.player.center_x - (self.window.width *0.5)
+        screen_center_y = self.window.height *0.5
 
         if screen_center_x < 0:
             screen_center_x = 0
@@ -352,8 +361,8 @@ class GiocoScreen(arcade.View):
         if screen_center_x > map_width - self.window.width:
             screen_center_x = map_width - self.window.width
 
-        if self.player.center_x > self.window.width // 2:
-            self.camera.position = (screen_center_x + self.window.width / 2, screen_center_y)
+        if self.player.center_x > self.window.width *0.5:
+            self.camera.position = (screen_center_x + self.window.width *0.5, screen_center_y)
         self._aggiorna_posizione_pulsanti()
 
     def _aggiorna_posizione_pulsanti(self):
@@ -381,8 +390,8 @@ class GiocoScreen(arcade.View):
 
         y_offset = self.window.height - 30
 
-        cuori_x = self.camera.position[0] - tempo_width // 2 - cuori_width // 2 + 5
-        cuori_y = y_offset - cuori_height // 2 - 25
+        cuori_x = self.camera.position[0] - tempo_width *0.5 - cuori_width *0.5 + 5
+        cuori_y = y_offset - cuori_height *0.5 - 25
         cuori = RectangleBorder(
             cuori_x,
             cuori_y,
@@ -394,20 +403,20 @@ class GiocoScreen(arcade.View):
 
 
         spacing = 1
-        start_x = cuori_x - cuori_width // 2 + 38
+        start_x = cuori_x - cuori_width *0.5 + 38
 
         for i in range(self.player.max_life):
             if i < self.player.health:
                 self.cuore_pieno_sprite.center_x = start_x + i * (self.cuore_pieno_sprite.width + spacing)
-                self.cuore_pieno_sprite.center_y = cuori_y + (cuori_height - self.cuore_pieno_sprite.height) // 2 - 10
+                self.cuore_pieno_sprite.center_y = cuori_y + (cuori_height - self.cuore_pieno_sprite.height) *0.5 - 10
                 arcade.draw_texture_rect(self.cuore_pieno_sprite.texture, self.cuore_pieno_sprite.rect)
             else:
                 self.cuore_vuoto_sprite.center_x = start_x + i * (self.cuore_vuoto_sprite.width + spacing)
-                self.cuore_vuoto_sprite.center_y = cuori_y + (cuori_height - self.cuore_vuoto_sprite.height) // 2 - 10
+                self.cuore_vuoto_sprite.center_y = cuori_y + (cuori_height - self.cuore_vuoto_sprite.height) *0.5 - 10
                 arcade.draw_texture_rect(self.cuore_vuoto_sprite.texture, self.cuore_vuoto_sprite.rect)
 
-        soldi_x = self.camera.position[0] + tempo_width // 2 + soldi_width // 2 - 5
-        soldi_y = y_offset - soldi_height // 2 - 25
+        soldi_x = self.camera.position[0] + tempo_width *0.5 + soldi_width *0.5 - 5
+        soldi_y = y_offset - soldi_height *0.5 - 25
         soldi = RectangleBorder(
             soldi_x,
             soldi_y,
@@ -419,20 +428,20 @@ class GiocoScreen(arcade.View):
 
         arcade.draw_text(
             f"{self.player.coins}",
-            soldi_x - (soldi_width // 4) - 35,
-            soldi_y - soldi_height // 2 + 25,
+            soldi_x - (soldi_width *0.25) - 35,
+            soldi_y - soldi_height *0.5 + 25,
             arcade.color.WHITE,
             font_size=24,
             bold=True
         )
 
         moneta_sprite = arcade.Sprite("Media/img/coin.png", scale=1.2)
-        moneta_sprite.center_x = soldi_x - (soldi_width // 4) + 20
+        moneta_sprite.center_x = soldi_x - (soldi_width *0.25) + 20
         moneta_sprite.center_y = soldi_y
         arcade.draw_texture_rect(moneta_sprite.texture, moneta_sprite.rect)
 
         #tempo_x = self.camera.position[0]
-        tempo_y = y_offset - tempo_height // 2
+        tempo_y = y_offset - tempo_height *0.5
         tempo = RectangleBorder(
             self.camera.position[0],
             tempo_y,
@@ -529,7 +538,7 @@ class GiocoScreen(arcade.View):
 
     def _go_menu(self):
         from schermate.MenuScreen import MenuScreen
-        self.camera.position =(self.window.width / 2, self.window.height / 2)
+        self.camera.position =(self.window.width *0.5, self.window.height *0.5)
         self.camera.use()
         self.window.show_view(MenuScreen(True))
 
