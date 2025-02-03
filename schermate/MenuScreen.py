@@ -61,7 +61,7 @@ class MenuScreen(arcade.View):
 
         buttons_data = [
             ("Esci ", lambda: arcade.exit()),
-            ("Impostazioni ", lambda: self.window.show_view(ImpostazioniScreen(self._go_to_menu))),
+            ("Impostazioni ", lambda: self.window.show_view(ImpostazioniScreen())),
             ("Shop", lambda: self._on_click_non_disponibile()),
             ("Mappe ", lambda: self.window.show_view(MappeScreen())),
             ("Gioca ", lambda: self._on_click_gioca()),

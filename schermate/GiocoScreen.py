@@ -85,6 +85,8 @@ class Player(arcade.Sprite):
 class GiocoScreen(arcade.View):
     def __init__(self):
         super().__init__()
+        self.cuoriList = []
+        self.moneteList = []
         self.tilemap = arcade.load_tilemap("Media/mappe/test.tmx", TILE_SCALING if not ImpostazioniLogica().is_fullscreen() else 1.3)
         self.scene = arcade.Scene.from_tilemap(self.tilemap)
 
@@ -101,7 +103,7 @@ class GiocoScreen(arcade.View):
         self.danni = self.scene["danni"] if "danni" in self.scene else arcade.SpriteList()
 
         self.monete.rescale(1.3)
-        self.player = Player(150, 150)
+        self.player = Player(150, 300)
         self.start_time = time.time()
 
         self.camera = arcade.camera.Camera2D()
@@ -114,6 +116,30 @@ class GiocoScreen(arcade.View):
     def on_show_view(self):
         self.camera =arcade.camera.Camera2D()
         self._create_buttons()
+        self.tilemap = arcade.load_tilemap("Media/mappe/test.tmx",
+                                           TILE_SCALING if not ImpostazioniLogica().is_fullscreen() else 1.3)
+        self.scene = arcade.Scene.from_tilemap(self.tilemap)
+
+        self.ostacoli = self.scene["ostacoli"] if "ostacoli" in self.scene else arcade.SpriteList()
+        self.bombe = self.scene["bombe"] if "bombe" in self.scene else arcade.Sprite()
+
+        self.monete = self.scene["monete"] if "monete" in self.scene else arcade.SpriteList()
+        self.monete.rescale(1.3)
+
+        self.cuori = self.scene["cuori"] if "cuori" in self.scene else arcade.SpriteList()
+        self.danni = self.scene["danni"] if "danni" in self.scene else arcade.SpriteList()
+        self.scaling = TILE_SCALING if not ImpostazioniLogica().is_fullscreen() else 1.3
+        for moneta in list(self.monete):
+            posizione = (round(moneta.center_x/self.scaling), round(moneta.center_y/self.scaling))
+            if posizione in self.moneteList:
+                moneta.remove_from_sprite_lists()
+        for cuore in list(self.cuori):
+            posizione = (round(cuore.center_x / self.scaling), round(cuore.center_y / self.scaling))
+            if posizione in self.cuoriList:
+                cuore.remove_from_sprite_lists()
+        self.player.center_x = round(self.playerposition_x * self.scaling)
+        self.player.center_y = round(self.playerposition_y * self.scaling)
+
 
     def on_draw(self):
         self.clear()
@@ -173,12 +199,14 @@ class GiocoScreen(arcade.View):
             self.player.center_y -= self.player.change_y
 
         for moneta in oggetti_colpiti["monete"]:
+            self.moneteList.append((round(moneta.center_x/self.scaling), round(moneta.center_y/self.scaling)))
             moneta.remove_from_sprite_lists()
             self.player.coins += 1
             self.tile_grid = self._build_tile_grid()
             print(f"Moneta raccolta! Monete totali: {self.player.coins}")
 
         for cuore in oggetti_colpiti["cuori"]:
+            self.cuoriList.append((round(cuore.center_x/self.scaling), round(cuore.center_y/self.scaling)))
             cuore.remove_from_sprite_lists()
             self.player.add_health(1)
             self.tile_grid = self._build_tile_grid()
@@ -216,6 +244,8 @@ class GiocoScreen(arcade.View):
             if self.finish == "Gameover":
                 pass
             elif self.start_pause == 0:
+                self.playerposition_x = round(self.player.center_x / self.scaling)
+                self.playerposition_y = round(self.player.center_y / self.scaling)
                 self.start_pause = time.time()
             else:
                 self.start_time += int(time.time() - self.start_pause)

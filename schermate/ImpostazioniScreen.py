@@ -71,4 +71,8 @@ class ImpostazioniScreen(arcade.View):
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.ESCAPE:
-            self.callback()
+            if self.callback is None:
+                from schermate.MenuScreen import MenuScreen
+                self.window.show_view(MenuScreen())
+            else:
+                self.callback()
