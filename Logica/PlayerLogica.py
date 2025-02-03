@@ -34,7 +34,7 @@ class Player(arcade.Sprite):
             self.health = temp
 
     def rem_health(self, val):
-        if ImpostazioniLogica().is_audio():
+        if ImpostazioniLogica().is_audio() and time.time() - self.last_danno >= 0.3:
             sound = arcade.Sound("Media/Sounds/health_down_sound.mp3")
             sound.play(volume=0.5)
         temp = self.health - val

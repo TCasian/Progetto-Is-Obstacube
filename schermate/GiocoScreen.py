@@ -34,7 +34,7 @@ class GiocoScreen(arcade.View):
 
         self.danni = self.scene["danni"] if "danni" in self.scene else arcade.SpriteList()
 
-        self.monete.rescale(1.3)
+        #self.monete.rescale(1.3)
         self.player = Player(150, 300)
         self.start_time = time.time()
 
@@ -56,7 +56,7 @@ class GiocoScreen(arcade.View):
         self.bombe = self.scene["bombe"] if "bombe" in self.scene else arcade.Sprite()
 
         self.monete = self.scene["monete"] if "monete" in self.scene else arcade.SpriteList()
-        self.monete.rescale(1.3)
+        #self.monete.rescale(1.3)
 
         self.cuori = self.scene["cuori"] if "cuori" in self.scene else arcade.SpriteList()
         self.danni = self.scene["danni"] if "danni" in self.scene else arcade.SpriteList()
