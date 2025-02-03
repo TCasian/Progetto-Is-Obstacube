@@ -1,12 +1,16 @@
-import time
-
 import arcade
-
+import time
 from Logica.ImpostazioniLogica import ImpostazioniLogica
-from schermate.GiocoScreen import TILE_WIDTH, TILE_HEIGHT
 
+TILE_SCALING = 1.0
+PLAYER_SPEED = 5
+GRAVITY = 0.5
+TILE_WIDTH = 32
+TILE_HEIGHT = 32
 
 class Player(arcade.Sprite):
+
+
     def __init__(self, x, y):
         super().__init__()
         self.center_x = x
@@ -30,6 +34,9 @@ class Player(arcade.Sprite):
             self.health = temp
 
     def rem_health(self, val):
+        if ImpostazioniLogica().is_audio():
+            sound = arcade.Sound("Media/Sounds/health_down_sound.mp3")
+            sound.play(volume=0.5)
         temp = self.health - val
         if not temp < 0 and time.time() - self.last_danno >= 0.3:
             self.health = temp
@@ -77,3 +84,4 @@ class Player(arcade.Sprite):
             grid.append(row)
 
         return grid
+

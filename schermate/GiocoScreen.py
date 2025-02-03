@@ -2,18 +2,16 @@ import arcade
 import time
 
 from Logica.ImpostazioniLogica import ImpostazioniLogica
-from Logica.PlayerLogica import Player
 from schermate.ImpostazioniScreen import ImpostazioniScreen
 from utils.RoundedButtons import RoundedButton
 from utils.RectangleBorder import RectangleBorder
+from Logica.PlayerLogica import Player
 
 TILE_SCALING = 1.0
 PLAYER_SPEED = 5
 GRAVITY = 0.5
 TILE_WIDTH = 32
 TILE_HEIGHT = 32
-
-
 
 
 class GiocoScreen(arcade.View):
@@ -36,7 +34,7 @@ class GiocoScreen(arcade.View):
 
         self.danni = self.scene["danni"] if "danni" in self.scene else arcade.SpriteList()
 
-        #self.monete.rescale(1.3) non fa comparire le monete nel posto giusto a causa dello scaling
+        self.monete.rescale(1.3)
         self.player = Player(150, 300)
         self.start_time = time.time()
 
@@ -58,7 +56,7 @@ class GiocoScreen(arcade.View):
         self.bombe = self.scene["bombe"] if "bombe" in self.scene else arcade.Sprite()
 
         self.monete = self.scene["monete"] if "monete" in self.scene else arcade.SpriteList()
-        #self.monete.rescale(1.3) non fa comparire le monete nel posto giusto a causa dello scaling
+        self.monete.rescale(1.3)
 
         self.cuori = self.scene["cuori"] if "cuori" in self.scene else arcade.SpriteList()
         self.danni = self.scene["danni"] if "danni" in self.scene else arcade.SpriteList()
@@ -151,9 +149,6 @@ class GiocoScreen(arcade.View):
 
         if oggetti_colpiti["danni"]:
             self.player.rem_health(1)
-            if ImpostazioniLogica().is_audio():
-                sound = arcade.Sound("Media/Sounds/health_down_sound.mp3")
-                sound.play(volume=0.5)
             if self.player.health <= 0:
                 self.finish = "Gameover"
 
