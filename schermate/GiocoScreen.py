@@ -87,8 +87,6 @@ class GiocoScreen(arcade.View):
         if self.start_pause != 0:
             self._draw_paused()
 
-
-
     def on_mouse_motion(self, x, y, dx, dy):
         print()
         if self.start_pause != 0:

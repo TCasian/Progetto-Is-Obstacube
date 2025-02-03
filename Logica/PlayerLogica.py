@@ -42,8 +42,6 @@ class Player(arcade.Sprite):
             self.health = temp
             self.last_danno = time.time()
 
-
-
     def draw(self):
         immune = (time.time() - self.last_danno <= 0.3)
         self.left = self.center_x - self.width *0.5
