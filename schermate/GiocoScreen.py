@@ -90,7 +90,7 @@ class GiocoScreen(arcade.View):
         super().__init__()
         self.cuoriList = []
         self.moneteList = []
-        self.tilemap = arcade.load_tilemap("Media/mappe/test.tmx", TILE_SCALING if not ImpostazioniLogica().is_fullscreen() else 1.3)
+        self.tilemap = arcade.load_tilemap("Media/mappe/mappa1.tmx", TILE_SCALING if not ImpostazioniLogica().is_fullscreen() else 1.3)
         self.scene = arcade.Scene.from_tilemap(self.tilemap)
 
         self.ostacoli = self.scene["ostacoli"] if "ostacoli" in self.scene else arcade.SpriteList()
@@ -119,7 +119,7 @@ class GiocoScreen(arcade.View):
     def on_show_view(self):
         self.camera =arcade.camera.Camera2D()
         self._create_buttons()
-        self.tilemap = arcade.load_tilemap("Media/mappe/test.tmx",
+        self.tilemap = arcade.load_tilemap("Media/mappe/mappa1.tmx",
                                            TILE_SCALING if not ImpostazioniLogica().is_fullscreen() else 1.3)
         self.scene = arcade.Scene.from_tilemap(self.tilemap)
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.10" tiledversion="1.11.1" name="TX Tileset Wall" tilewidth="32" tileheight="32" tilecount="256" columns="16">
+<tileset version="1.10" tiledversion="1.11.2" name="TX Tileset Wall" tilewidth="32" tileheight="32" tilecount="256" columns="16">
  <image source="TX Tileset Wall.png" width="512" height="512"/>
  <tile id="97">
   <properties>
@@ -23,7 +23,7 @@
  </tile>
  <tile id="102">
   <properties>
-   <property name="is_walkable" type="bool" value="false"/>
+   <property name="tipo" value="ostacoli-muro"/>
   </properties>
  </tile>
  <tile id="113">
@@ -51,7 +51,7 @@
  </tile>
  <tile id="118">
   <properties>
-   <property name="is_walkable" type="bool" value="false"/>
+   <property name="tipo" value="ostacoli-muro"/>
   </properties>
  </tile>
  <tile id="145">
@@ -68,6 +68,9 @@
   </objectgroup>
  </tile>
  <tile id="148">
+  <properties>
+   <property name="tipo" value="ostacoli-muro"/>
+  </properties>
   <objectgroup draworder="index" id="2">
    <object id="1" x="0" y="0" width="32" height="32">
     <properties>
@@ -77,6 +80,9 @@
   </objectgroup>
  </tile>
  <tile id="149">
+  <properties>
+   <property name="tipo" value="ostacoli-muro"/>
+  </properties>
   <objectgroup draworder="index" id="2">
    <object id="1" x="0" y="0" width="32" height="32"/>
   </objectgroup>
@@ -95,6 +101,9 @@
   </objectgroup>
  </tile>
  <tile id="164">
+  <properties>
+   <property name="tipo" value="ostacoli-muro"/>
+  </properties>
   <objectgroup draworder="index" id="2">
    <object id="1" x="0" y="0" width="32" height="32"/>
    <object id="2" x="0" y="0" width="32" height="32">
@@ -105,6 +114,9 @@
   </objectgroup>
  </tile>
  <tile id="165">
+  <properties>
+   <property name="tipo" value="ostacoli-muro"/>
+  </properties>
   <objectgroup draworder="index" id="2">
    <object id="1" x="0" y="0" width="32" height="32"/>
    <object id="2" x="0" y="0" width="32" height="32"/>

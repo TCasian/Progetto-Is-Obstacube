@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.10" tiledversion="1.11.1" name="coin" tilewidth="32" tileheight="32" tilecount="32" columns="16">
- <image source="coin_gold.png" width="512" height="64"/>
+<tileset version="1.10" tiledversion="1.11.2" name="coin" tilewidth="32" tileheight="32" tilecount="10" columns="8">
+ <image source="coin_gold.png" width="256" height="32"/>
  <tile id="0">
+  <properties>
+   <property name="tipo" value="monete-moneta"/>
+  </properties>
   <animation>
    <frame tileid="0" duration="100"/>
    <frame tileid="2" duration="100"/>
@@ -14,6 +17,9 @@
   </animation>
  </tile>
  <tile id="1">
+  <properties>
+   <property name="tipo" value="monete-moneta"/>
+  </properties>
   <animation>
    <frame tileid="1" duration="100"/>
    <frame tileid="3" duration="100"/>
@@ -25,7 +31,40 @@
    <frame tileid="15" duration="100"/>
   </animation>
  </tile>
+ <tile id="2">
+  <properties>
+   <property name="tipo" value="monete-moneta"/>
+  </properties>
+ </tile>
+ <tile id="3">
+  <properties>
+   <property name="tipo" value="monete-moneta"/>
+  </properties>
+ </tile>
+ <tile id="4">
+  <properties>
+   <property name="tipo" value="monete-moneta"/>
+  </properties>
+ </tile>
+ <tile id="5">
+  <properties>
+   <property name="tipo" value="monete-moneta"/>
+  </properties>
+ </tile>
+ <tile id="6">
+  <properties>
+   <property name="tipo" value="monete-moneta"/>
+  </properties>
+ </tile>
+ <tile id="7">
+  <properties>
+   <property name="tipo" value="monete-moneta"/>
+  </properties>
+ </tile>
  <tile id="16">
+  <properties>
+   <property name="tipo" value="monete-moneta"/>
+  </properties>
   <animation>
    <frame tileid="16" duration="100"/>
    <frame tileid="18" duration="100"/>
@@ -38,6 +77,9 @@
   </animation>
  </tile>
  <tile id="17">
+  <properties>
+   <property name="tipo" value="monete-moneta"/>
+  </properties>
   <animation>
    <frame tileid="17" duration="100"/>
    <frame tileid="19" duration="100"/>
