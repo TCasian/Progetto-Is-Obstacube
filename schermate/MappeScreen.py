@@ -2,20 +2,27 @@ import arcade
 import os
 import tkinter as tk
 from tkinter import filedialog
+
+from schermate.GiocoScreen import GiocoScreen
 from utils.RectangleBorder import RectangleBorder
 from utils.RoundedButtons import RoundedButton
 import shutil
 
 class MappeScreen(arcade.View):
 
-    def __init__(self):
+    def __init__(self, flag=True):
         super().__init__()
+        self.flag = flag
         self.selezionata = None
         self.buttons = []
         self.mappe = []
 
+    def setup(self):
+        self.camera = arcade.camera.Camera2D()
+
     def on_show_view(self):
         arcade.set_background_color((240, 255, 240))
+        self.setup()
         self._carica_locali()
         self.create_buttons()
 
@@ -74,38 +81,38 @@ class MappeScreen(arcade.View):
             text_size=16,
             hover_text_color=arcade.color.WHITE,
             bold=True,
-            callback=lambda: self._gioca_mappa()
+            callback=lambda: self._gioca_mappa(self.selezionata),
         ))
+        if self.flag:
+            self.buttons.append(RoundedButton(
+                text="Aggiungi",
+                center_x=self.window.width / 2,
+                center_y=120,
+                width=300,
+                height=60,
+                bg_color=(240, 255, 240),
+                bg_hover=(217, 147, 8),
+                text_color=arcade.color.BLACK,
+                text_size=16,
+                hover_text_color=arcade.color.WHITE,
+                bold=True,
+                callback=lambda: self._apri_file_dialog()
+            ))
 
-        self.buttons.append(RoundedButton(
-            text="Aggiungi",
-            center_x=self.window.width / 2,
-            center_y=120,
-            width=300,
-            height=60,
-            bg_color=(240, 255, 240),
-            bg_hover=(217, 147, 8),
-            text_color=arcade.color.BLACK,
-            text_size=16,
-            hover_text_color=arcade.color.WHITE,
-            bold=True,
-            callback=lambda: self._apri_file_dialog()
-        ))
-
-        self.buttons.append(RoundedButton(
-            text="Elimina",
-            center_x=self.window.width / 2 + 350,
-            center_y=120,
-            width=300,
-            height=60,
-            bg_color=(240, 255, 240),
-            bg_hover=(217, 147, 8),
-            text_color=arcade.color.BLACK,
-            text_size=16,
-            hover_text_color=arcade.color.WHITE,
-            bold=True,
-            callback=lambda: self._elimina_mappa()
-        ))
+            self.buttons.append(RoundedButton(
+                text="Elimina",
+                center_x=self.window.width / 2 + 350,
+                center_y=120,
+                width=300,
+                height=60,
+                bg_color=(240, 255, 240),
+                bg_hover=(217, 147, 8),
+                text_color=arcade.color.BLACK,
+                text_size=16,
+                hover_text_color=arcade.color.WHITE,
+                bold=True,
+                callback=lambda: self._elimina_mappa()
+            ))
 
     def _apri_file_dialog(self):
         # Crea una finestra di dialogo per selezionare un file
@@ -133,8 +140,8 @@ class MappeScreen(arcade.View):
             self.mappe.remove(self.mappe[self.selezionata])
             self.create_buttons()
 
-    def _gioca_mappa(self):
-        print("oh")
+    def _gioca_mappa(self, mappa):
+        self.window.show_view(GiocoScreen(self.mappe[self.selezionata]+".tmx"))
 
     def select_map(self, numero_mappa):
         self.selezionata = numero_mappa
@@ -153,6 +160,7 @@ class MappeScreen(arcade.View):
 
     def on_draw(self):
         self.clear()
+        self.camera.use()
         mappe_width = self.window.width - 100
         mappe_height = self.window.height - 100
 

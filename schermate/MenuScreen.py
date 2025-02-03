@@ -105,7 +105,7 @@ class MenuScreen(arcade.View):
         arcade.draw_lrbt_rectangle_filled(left, right, bottom, top, arcade.color.WHITE)
 
         popup_buttons_data = [
-                ("Standard", lambda: self.window.show_view(GiocoScreen())),
+                ("Standard", lambda: self.window.show_view(MappeScreen(False))),
                 ("AI", lambda: print("AI")),
             ]
 

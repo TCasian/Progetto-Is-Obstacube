@@ -15,11 +15,12 @@ TILE_HEIGHT = 32
 
 
 class GiocoScreen(arcade.View):
-    def __init__(self):
+    def __init__(self, mappa="test.tmx"):
         super().__init__()
+        self.mappa = mappa
         self.cuoriList = []
         self.moneteList = []
-        self.tilemap = arcade.load_tilemap("Media/mappe/mappa1.tmx", TILE_SCALING if not ImpostazioniLogica().is_fullscreen() else 1.3)
+        self.tilemap = arcade.load_tilemap(f"Media/mappe/{self.mappa}", TILE_SCALING if not ImpostazioniLogica().is_fullscreen() else 1.3)
         self.scene = arcade.Scene.from_tilemap(self.tilemap)
 
         self.ostacoli = self.scene["ostacoli"] if "ostacoli" in self.scene else arcade.SpriteList()
@@ -35,6 +36,8 @@ class GiocoScreen(arcade.View):
         self.danni = self.scene["danni"] if "danni" in self.scene else arcade.SpriteList()
 
         #self.monete.rescale(1.3)
+        self.playerposition_x = 150
+        self.playerposition_y = 300
         self.player = Player(150, 300)
         self.start_time = time.time()
 
@@ -48,16 +51,19 @@ class GiocoScreen(arcade.View):
     def on_show_view(self):
         self.camera =arcade.camera.Camera2D()
         self._create_buttons()
-        self.tilemap = arcade.load_tilemap("Media/mappe/mappa1.tmx",
-                                           TILE_SCALING if not ImpostazioniLogica().is_fullscreen() else 1.3)
+        self.tilemap = arcade.load_tilemap(f"Media/mappe/{self.mappa}",TILE_SCALING if not ImpostazioniLogica().is_fullscreen() else 1.3)
         self.scene = arcade.Scene.from_tilemap(self.tilemap)
 
         self.ostacoli = self.scene["ostacoli"] if "ostacoli" in self.scene else arcade.SpriteList()
         self.bombe = self.scene["bombe"] if "bombe" in self.scene else arcade.Sprite()
 
         self.monete = self.scene["monete"] if "monete" in self.scene else arcade.SpriteList()
-        #self.monete.rescale(1.3)
-
+        self.monetepos = []
+        for moneta in self.monete:
+            self.monetepos.append((moneta.center_x,moneta.center_y))
+        self.monete.rescale(1.3)
+        for moneta, pos in zip(self.monete, self.monetepos):
+            moneta.center_x, moneta.center_y = pos
         self.cuori = self.scene["cuori"] if "cuori" in self.scene else arcade.SpriteList()
         self.danni = self.scene["danni"] if "danni" in self.scene else arcade.SpriteList()
         self.scaling = TILE_SCALING if not ImpostazioniLogica().is_fullscreen() else 1.3
@@ -149,9 +155,12 @@ class GiocoScreen(arcade.View):
             self.player.rem_health(1)
             if self.player.health <= 0:
                 self.finish = "Gameover"
-
+        map_width = self.tilemap.width * self.tilemap.tile_width
+        if self.player.center_x > map_width - 48:
+            self.finish = "Win"
         self.scene.update_animation(delta_time)
         self._muovi_camera()
+
 
     def print_player_grid(self):
         """
@@ -183,8 +192,6 @@ class GiocoScreen(arcade.View):
             else:
                 self.start_time += int(time.time() - self.start_pause)
                 self.start_pause = 0
-
-
         elif key == arcade.key.SPACE:
             self.print_player_grid()
 
@@ -255,7 +262,7 @@ class GiocoScreen(arcade.View):
             text_color=arcade.color.BLACK,
             text_size=20,
             hover_text_color=arcade.color.WHITE,
-            callback=lambda: self.window.show_view(GiocoScreen()),
+            callback=lambda: self.window.show_view(GiocoScreen(self.mappa)),
             bold=True
         ))
 
@@ -273,6 +280,40 @@ class GiocoScreen(arcade.View):
             callback= lambda: self._go_menu(),
             bold=True
         ))
+
+        self.finish_buttons_win.append(RoundedButton(
+            text="Nuova partita",
+            center_x=self.camera.position[0] - 200,
+            center_y=self.camera.position[1] - (200 if not ImpostazioniLogica().is_fullscreen() else 180),
+            width=button_width,
+            height=button_height,
+            bg_color=(240, 255, 240),
+            bg_hover=(217, 147, 8),
+            text_color=arcade.color.BLACK,
+            text_size=20,
+            hover_text_color=arcade.color.WHITE,
+            callback=self.go_to_mappe,
+            bold=True
+        ))
+
+        self.finish_buttons_win.append(RoundedButton(
+            text="Torna al menu!",
+            center_x=self.camera.position[0] + 200,
+            center_y=self.camera.position[1] - (200 if not ImpostazioniLogica().is_fullscreen() else 180),
+            width=button_width,
+            height=button_height,
+            bg_color=(240, 255, 240),
+            bg_hover=(217, 147, 8),
+            text_color=arcade.color.BLACK,
+            text_size=20,
+            hover_text_color=arcade.color.WHITE,
+            callback=lambda: self._go_menu(),
+            bold=True
+        ))
+
+    def go_to_mappe(self):
+        from schermate.MappeScreen import MappeScreen
+        self.window.show_view(MappeScreen(False))
 
     def _muovi_camera(self):
         screen_center_x = self.player.center_x - (self.window.width *0.5)
@@ -303,9 +344,12 @@ class GiocoScreen(arcade.View):
         self.finish_buttons_gameover[0].center_y = self.camera.position[1] - 200
         self.finish_buttons_gameover[1].center_y = self.camera.position[1] - 200
 
-        for button in self.finish_buttons_win:
-            button.center_x = self.camera.position[0] + 200
-            button.center_y = self.camera.position[1] - 200
+        self.finish_buttons_win[0].center_x = self.camera.position[0] - 200
+        self.finish_buttons_win[1].center_x = self.camera.position[0] + 200
+
+        self.finish_buttons_win[0].center_y = self.camera.position[1] - 200
+        self.finish_buttons_win[1].center_y = self.camera.position[1] - 200
+
 
     def _draw_info(self):
         tempo_width, tempo_height = 300, 120
@@ -456,9 +500,39 @@ class GiocoScreen(arcade.View):
             for button in self.finish_buttons_gameover:
                 button.draw()
 
+        if self.finish == "Win":
+            arcade.draw_text(
+                "Hai vinto!",
+                self.camera.position[0] - 120,
+                self.camera.position[1] + 100,
+                arcade.color.RED,
+                font_size=45,
+                bold=True
+            )
 
-        if self.finish == "win":
-            print("Win")
+            minuti = self.tempo_trascorso // 60
+            secondi = self.tempo_trascorso % 60
+
+            tempo = f"{minuti:02}:{secondi:02}"
+            arcade.draw_text(
+                "Tempo : " + tempo,
+                self.camera.position[0] - 160,
+                self.camera.position[1] + 20,
+                arcade.color.WHITE,
+                font_size=45,
+                bold=True
+            )
+
+            arcade.draw_text(
+                f"Hai raccolto {self.player.coins} monete!",
+                self.camera.position[0] - 380,
+                self.camera.position[1] - 60,
+                arcade.color.WHITE,
+                font_size=45,
+                bold=True
+            )
+            for button in self.finish_buttons_win:
+                button.draw()
 
     def _go_menu(self):
         from schermate.MenuScreen import MenuScreen
