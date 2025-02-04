@@ -44,6 +44,7 @@ class GiocoScreen(arcade.View):
         self.camera = arcade.camera.Camera2D()
         self.tile_grid = self._build_tile_grid()
         self.start_pause = 0
+        self.saved = False
 
 
         self.finish = None
@@ -182,6 +183,8 @@ class GiocoScreen(arcade.View):
             self.player.change_x = -PLAYER_SPEED
         elif key == arcade.key.D:
             self.player.change_x = PLAYER_SPEED
+        elif key == arcade.key.Z :
+            self.finish = "Win"
         elif key == arcade.key.ESCAPE:
             if self.finish == "Gameover":
                 pass
@@ -533,6 +536,12 @@ class GiocoScreen(arcade.View):
             )
             for button in self.finish_buttons_win:
                 button.draw()
+
+            if self.saved is not True:
+                self.player.salva_stat()
+
+            self.saved = True
+
 
     def _go_menu(self):
         from schermate.MenuScreen import MenuScreen

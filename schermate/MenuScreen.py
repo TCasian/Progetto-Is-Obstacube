@@ -36,6 +36,7 @@ class MenuScreen(arcade.View):
         self.scene = arcade.Scene.from_tilemap(arcade.load_tilemap("Media/mappe/Intro.tmx", 1 if not ImpostazioniLogica().is_fullscreen() else 1.3))
         if not self.jump:
             self.logo_sprite = arcade.Sprite("Media/Img/Logo.png", 1 if not ImpostazioniLogica().is_fullscreen() else 1.3)
+        self.window.show_view(GiocoScreen("mappa1.tmx"))
 
 
     def _configura_stato(self):
