@@ -30,7 +30,7 @@ class RoundedButton:
         current_bg_color = self.bg_hover if self.is_hovered else self.bg_color
         current_text_color = self.hover_text_color if self.is_hovered else self.text_color
 
-        if self.selected and self.callback is not None:
+        if self.selected:
             current_bg_color = self.bg_selected
 
         self._draw_rounded_rectangle(left, right, bottom, top, current_bg_color)

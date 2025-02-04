@@ -2,7 +2,7 @@ import arcade
 import time
 import xml.etree.ElementTree as ET
 from Logica.ImpostazioniLogica import ImpostazioniLogica
-from Persistenza.ImpostazioniJSON import load_player, save_player
+from Persistenza.PlayerJSON import load_player, save_player
 
 TILE_SCALING = 1.0
 PLAYER_SPEED = 5
@@ -127,5 +127,5 @@ class Player(arcade.Sprite):
 
     def salva_stat(self):
        a = load_player()
-       print(a["soldi"])
-       save_player(a["skins"], a["soldi"]+self.coins, a["corrente"])
+       print(a["monete"])
+       save_player(a["monete"]+self.coins, a["corrente"])

@@ -41,6 +41,7 @@ class MappeScreen(arcade.View):
         button_height = mappe_width * 0.08
         spacing = 10
         start_x = (self.window.width / 2) - ((button_width + spacing) * (10 / 2 - 0.5))
+
         start_y = self.window.height - 100
         altezza_col = 0
         self.buttons = []
