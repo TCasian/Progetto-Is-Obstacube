@@ -157,6 +157,8 @@ class GiocoScreen(arcade.View):
             if self.player.health <= 0:
                 self.finish = "Gameover"
         map_width = self.tilemap.width * self.tilemap.tile_width
+        if ImpostazioniLogica().is_fullscreen():
+            map_width *=1.3
         if self.player.center_x > map_width - 48:
             self.finish = "Win"
         self.scene.update_animation(delta_time)
