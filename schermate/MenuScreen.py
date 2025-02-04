@@ -36,7 +36,7 @@ class MenuScreen(arcade.View):
         self.scene = arcade.Scene.from_tilemap(arcade.load_tilemap("Media/mappe/Intro.tmx", 1 if not ImpostazioniLogica().is_fullscreen() else 1.3))
         if not self.jump:
             self.logo_sprite = arcade.Sprite("Media/Img/Logo.png", 1 if not ImpostazioniLogica().is_fullscreen() else 1.3)
-        self.window.show_view(GiocoScreen("mappa1.tmx"))
+        #self.window.show_view(GiocoScreen("mappa1.tmx"))
 
 
     def _configura_stato(self):
@@ -63,7 +63,7 @@ class MenuScreen(arcade.View):
         buttons_data = [
             ("Esci ", lambda: arcade.exit()),
             ("Impostazioni ", lambda: self.window.show_view(ImpostazioniScreen())),
-            ("Shop", lambda: self._on_click_non_disponibile()),
+            ("Shop", lambda: self.window.show_view(ShopScreen())),
             ("Mappe ", lambda: self.window.show_view(MappeScreen())),
             ("Gioca ", lambda: self._on_click_gioca()),
 
