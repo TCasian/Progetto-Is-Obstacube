@@ -328,6 +328,8 @@ class GiocoScreen(arcade.View):
             screen_center_x = 0
 
         map_width = self.tilemap.width * self.tilemap.tile_width
+        if ImpostazioniLogica().is_fullscreen():
+            map_width *=1.3
         if screen_center_x > map_width - self.window.width:
             screen_center_x = map_width - self.window.width
 
