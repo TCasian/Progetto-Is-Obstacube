@@ -214,8 +214,7 @@ class GiocoScreen(arcade.View):
                 x = int(sprite.center_x // self.tilemap.tile_width)
                 y = int(sprite.center_y // self.tilemap.tile_height)
                 if 0 <= x < self.tilemap.width and 0 <= y < self.tilemap.height:
-                    grid[y][x] = sprite.properties.get("tipo", "diocane")
-
+                    grid[y][x] = sprite.properties.get("tipo", "?")
         return grid
 
     def _create_buttons(self):

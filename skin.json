@@ -1,0 +1,27 @@
+[
+    {
+        "nome": "base",
+        "costo": 0,
+        "acquistata": true
+    },
+    {
+        "nome": "paurosa",
+        "costo": 100,
+        "acquistata": false
+    },
+    {
+        "nome": "pietro",
+        "costo": 150,
+        "acquistata": false
+    },
+    {
+        "nome": "rainbow",
+        "costo": 200,
+        "acquistata": false
+    },
+    {
+        "nome": "zombie",
+        "costo": 250,
+        "acquistata": false
+    }
+]
