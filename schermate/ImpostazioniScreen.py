@@ -1,5 +1,5 @@
 import arcade
-from pygame.display import is_fullscreen
+
 
 from Persistenza.ImpostazioniJSON import load_settings, save_settings
 from Logica.ImpostazioniLogica import ImpostazioniLogica
