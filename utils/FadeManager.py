@@ -1,6 +1,6 @@
 import arcade
 
-
+from Logica.ImpostazioniLogica import ImpostazioniLogica
 
 WIDTH = 1192
 HEIGHT = 767
@@ -43,8 +43,8 @@ class FadeManager:
         if self.color:
             arcade.draw_lrbt_rectangle_filled(
                 left=0,
-                right=WIDTH,
-                top=HEIGHT,
+                right=WIDTH*(1 if not ImpostazioniLogica().is_fullscreen() else 1.3),
+                top=HEIGHT*(1 if not ImpostazioniLogica().is_fullscreen() else 1.3),
                 bottom=0,
                 color=self.color
             )
