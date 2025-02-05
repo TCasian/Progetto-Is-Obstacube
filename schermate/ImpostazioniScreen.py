@@ -5,10 +5,10 @@ from Persistenza.ImpostazioniJSON import load_settings, save_settings
 from Logica.ImpostazioniLogica import ImpostazioniLogica
 class ImpostazioniScreen(arcade.View):
 
-    def __init__(self, callback=None):
+    def __init__(self, view=None):
         super().__init__()
         # Posizione dei checkbox
-        self.callback = callback
+        self.view = view
         self.fullscreen_checkbox_pos = (self.window.width *0.5 + 80, self.window.height *0.5 + 20)
         self.audio_checkbox_pos = (self.window.width *0.5 + 80, self.window.height *0.5 - 20)
         self.settings = ImpostazioniLogica()
@@ -71,8 +71,8 @@ class ImpostazioniScreen(arcade.View):
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.ESCAPE:
-            if self.callback is None:
+            if self.view is None:
                 from schermate.MenuScreen import MenuScreen
                 self.window.show_view(MenuScreen())
             else:
-                self.callback()
+                self.window.show_view(self.view)

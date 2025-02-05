@@ -82,7 +82,6 @@ class Player(arcade.Sprite):
             self.current_frame = (self.current_frame + 1) % len(self.frames)
             self.time_since_last_frame = 0
 
-
     def add_health(self, val):
         if ImpostazioniLogica().is_audio():
             sound = arcade.Sound("Media/Sounds/health_up_sound.wav")
@@ -128,4 +127,5 @@ class Player(arcade.Sprite):
 
     def salva_stat(self):
        a = load_player()
+       print(a["monete"])
        save_player(a["monete"]+self.coins, a["corrente"])
