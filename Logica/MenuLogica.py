@@ -21,6 +21,7 @@ class MenuLogica:
         self.window = window
         self.close_popup_buttons = []
 
+
     def _create_buttons(self):
         """Crea i bottoni e li aggiunge a Uimanager"""
         button_height = 60
@@ -28,7 +29,7 @@ class MenuLogica:
         button_spacing = 40
 
         buttons_data = [
-            ("Esci ", lambda: arcade.exit()),
+            ("Esci", lambda: arcade.close_window()),
             ("Impostazioni ", lambda: self.window.show_view(ImpostazioniScreen())),
             ("Shop", lambda: self.window.show_view(ShopScreen())),
             ("Mappe ", lambda: self.window.show_view(MappeScreen())),

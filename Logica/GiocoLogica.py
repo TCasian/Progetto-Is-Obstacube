@@ -19,6 +19,7 @@ class GiocoLogica:
         self.window = window
         self.view = view
         self.mappa = mappa
+        self.tilemap = None
         self.load_map()
         self.load()
         self.cuoriList = []
@@ -31,7 +32,7 @@ class GiocoLogica:
         self.start_pause = 0
         self.saved = False
         self.finish = None
-        self.tilemap = None
+
 
     def load_map(self):
         self.tilemap = arcade.load_tilemap(f"Media/mappe/{self.mappa}",TILE_SCALING if not ImpostazioniLogica().is_fullscreen() else 1.3)

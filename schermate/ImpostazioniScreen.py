@@ -25,6 +25,7 @@ class ImpostazioniScreen(arcade.View):
         self.update_checkbox_positions()
         self.setup()
 
+
     def on_update(self, delta_time):
         pass
 
@@ -67,7 +68,9 @@ class ImpostazioniScreen(arcade.View):
     def is_checkbox_clicked(self, x, y, checkbox_pos):
         # Check if the mouse click is within the bounding box of the checkbox
         checkbox_x, checkbox_y = checkbox_pos
+        print("ciao")
         return (checkbox_x - 20 < x < checkbox_x + 20) and (checkbox_y - 10 < y < checkbox_y + 10)
+
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.ESCAPE:

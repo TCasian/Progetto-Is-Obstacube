@@ -10,6 +10,7 @@ class MenuScreen(arcade.View):
         super().__init__()
         self.menu = MenuLogica(self.window, jump)
 
+
     def on_show_view(self):
         """Chiamato solo la prima volta quando viene creata la view"""
         arcade.set_background_color(arcade.color.WHITE)
@@ -120,3 +121,13 @@ class MenuScreen(arcade.View):
                     button.draw()
 
 
+
+
+
+
+    def get_exit_button(self):
+        self.menu._create_buttons()
+        for button in self.menu.get_buttons():
+            if button.text == "Esci":
+                print(button.text)
+                return button
