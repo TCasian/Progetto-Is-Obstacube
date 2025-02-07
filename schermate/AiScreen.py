@@ -1,7 +1,7 @@
 import arcade
 import time
 
-from Logica.GiocoAI import GiocoLogica
+from Logica.GiocoAI import GiocoLogicaAi
 from Logica.ImpostazioniLogica import ImpostazioniLogica
 from schermate.ImpostazioniScreen import ImpostazioniScreen
 from utils.RoundedButtons import RoundedButton
@@ -18,7 +18,7 @@ class GiocoScreen(arcade.View):
     def __init__(self, mappa="test.tmx", training_mode=False):
         super().__init__()
         self.training_mode = training_mode
-        self.gioco = GiocoLogica(self.window, mappa, self, training_mode)
+        self.gioco = GiocoLogicaAi(self.window, mappa, self, training_mode)
         self.flag = False
         self.key = 4
 
