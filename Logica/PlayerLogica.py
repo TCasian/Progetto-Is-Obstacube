@@ -5,7 +5,7 @@ from Logica.ImpostazioniLogica import ImpostazioniLogica
 from Persistenza.PlayerJSON import load_player, save_player
 
 TILE_SCALING = 1.0
-PLAYER_SPEED = 5
+PLAYER_SPEED = 10
 GRAVITY = 0.5
 TILE_WIDTH = 32
 TILE_HEIGHT = 32

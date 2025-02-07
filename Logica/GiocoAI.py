@@ -2,7 +2,7 @@ import time
 import matplotlib.pyplot as plt
 import arcade
 import numpy as np
-
+from sympy.strategies.core import switch
 
 from Logica.AILogica import DQNAgent
 from Logica.ImpostazioniLogica import ImpostazioniLogica
@@ -36,12 +36,21 @@ class GiocoLogicaAi(GiocoLogica):
         self.episode_numbers = []
         self.max_x = 0
         self.last_checkpoint = 0
-        self.reward_funcution = self.get_reward
+        self.fase = "movimento"
+        self.reward_function = self.get_reward_by_phase
+
+        self.multiplier = 3
+
+
 
 
 
 
     def get_state(self):
+        """
+        crea una rappresentazione dello state attorno al player
+        """
+
         grid = self.player.get_surrounding_grid(self.tile_grid)
         rows = len(grid)
         cols = len(grid[0]) if rows > 0 else 0
@@ -61,28 +70,27 @@ class GiocoLogicaAi(GiocoLogica):
         # Mappatura azioni
         if action == 0:
             if self.flag:# left
-                self.player.change_x = -PLAYER_SPEED*3
+                self.player.change_x = -PLAYER_SPEED
             self.last_action = 0
         elif action == 1:
             if self.flag:# right
-                self.player.change_x = PLAYER_SPEED*3
+                self.player.change_x = PLAYER_SPEED
             self.last_action = 1
         elif action == 2:
             if self.flag:# up
-                self.player.change_y = PLAYER_SPEED*3
+                self.player.change_y = PLAYER_SPEED
             self.last_action = 2
         elif action == 3:
             if self.flag:# down
-                self.player.change_y = -PLAYER_SPEED*3
+                self.player.change_y = -PLAYER_SPEED
             self.last_action = 3
         elif action == 4:  # no action
             self.player.change_x = 0
             self.last_action = 4
             self.player.change_y = 0
-        self.update(1/500)  # Simula un frame
-        done = self.finish is not None
-        reward = self.reward_funcution()
-        return self.get_state(), reward, done
+        self.update()
+
+        return self.get_state(), self.reward_function(), self.finish is not None
 
     def _is_action_safe(self):
         # Aggiungere logica contestuale per valutare la sicurezza dell'azione
@@ -126,32 +134,20 @@ class GiocoLogicaAi(GiocoLogica):
         if self.episode % 100 == 0:
             self.agent.update_target_model()
         self.episode += 1
+        """
         if len(self.episode_numbers) >= 150:
-            self.reward_funcution = self.get_reward_1
+            self.reward_function = self.get_reward_1
             self.mappa = "test.tmx"
         if len(self.episode_numbers) >= 600:
-            self.reward_funcution = self.get_reward_2
-            self.mappa = "foresta.tmx"
+            self.reward_function = self.get_reward_2
+            self.mappa = "foresta.tmx"""
         if self.agent.epsilon > self.agent.epsilon_min:
             self.agent.epsilon *= self.agent.epsilon_decay
 
-    def get_reward(self):
-        reward = 0
-        if self.last_action==1:
-            reward += 1
-        else:
-            reward -= 1
-        # 5. Ricompensa per raggiungere la fine
-        if self.finish == "Win":
-            return 500  # Ricompensa grande per il successo
-        if self.finish == "Gameover":
-            return -100
-        return reward
 
-    def get_reward_1(self):
+    def get_reward_by_phase(self):
         reward = 0
-        if self.last_action == 1:
-            reward += 1
+        fase = self.fase
         oggetti_colpiti = {
             "ostacoli": arcade.check_for_collision_with_list(self.player, self.ostacoli),
             "monete": arcade.check_for_collision_with_list(self.player, self.monete),
@@ -159,64 +155,46 @@ class GiocoLogicaAi(GiocoLogica):
             "danni": arcade.check_for_collision_with_list(self.player, self.danni)
         }
 
-        if oggetti_colpiti["ostacoli"]:
-            reward -= 1
-        if oggetti_colpiti["monete"]:
-            reward += 1
-        if oggetti_colpiti["cuori"]:
-            reward += 1
-        if oggetti_colpiti["danni"]:
-            reward -= 1
 
-        # 5. Ricompensa per raggiungere la fine
-        if self.finish == "Win":
-            return 500  # Ricompensa grande per il successo
-        if self.finish == "Gameover":
-            return -100
-        return reward
 
-    def get_reward_2(self):
-        reward = 0
         current_x = self.player.center_x
-
-        # 1. Ricompensa principale per il movimento a destra
         dx = current_x - self.last_x
-        reward += max(dx, 0) * 5  # Incentivo più forte a muoversi a destra
 
-        # 2. Penalità per muoversi a sinistra
+
         if dx < 0:
-            reward -= abs(dx) * 2  # Penalità più severa per il movimento a sinistra
+            reward -= 10 # Penalità verso sinstra
+        elif dx > 0:
+            reward += 10 # reward destra
+        elif dx == 0:
+            reward -= 15 #penalita per starsi fermo
 
-        oggetti_colpiti = {
-            "ostacoli": arcade.check_for_collision_with_list(self.player, self.ostacoli),
-            "monete": arcade.check_for_collision_with_list(self.player, self.monete),
-            "cuori": arcade.check_for_collision_with_list(self.player, self.cuori),
-            "danni": arcade.check_for_collision_with_list(self.player, self.danni)
-        }
+        if fase != "movimento":
+            #fase ostacoli
+            if oggetti_colpiti["ostacoli"]:
+                reward -= 5
+            if fase != "ostacoli":
+                #fase danni
+                if oggetti_colpiti["danni"]:
+                    reward -= 10
+                    if fase != "danni":
+                        #fase raccolta
+                        if oggetti_colpiti["monete"]:
+                            reward += 2
+                        if oggetti_colpiti["cuori"]:
+                            reward += 5
+                            if fase != "raccolta":
+                                #fase goal
+                                if self.finish == "Win":
+                                    reward += 500
+                                if self.finish == "Gameover":
+                                   reward -= 100
 
-        if oggetti_colpiti["ostacoli"]:
-            reward -= 1
-        if oggetti_colpiti["monete"]:
-            reward += 1
-        if oggetti_colpiti["cuori"]:
-            reward += 1
-        if oggetti_colpiti["danni"]:
-            reward -= 1
-
-        # 5. Ricompensa per raggiungere la fine
-        if self.finish == "Win":
-            return 500  # Ricompensa grande per il successo
-        if self.finish == "Gameover":
-            return -100
-
-        # 6. Penalità per inattività
-        if dx == 0:
-            reward -= 5  # Penalizza se l'agente resta fermo
-
-        # 7. Aggiorna stato
         self.last_x = current_x
 
         return reward
+
+
+
 
     def plot_rewards(self):
         plt.figure(figsize=(12, 6))
@@ -228,23 +206,19 @@ class GiocoLogicaAi(GiocoLogica):
         plt.savefig('training_rewards.png')
         plt.close()
 
-    def update(self, delta_time):
+    def update(self, delta_time=10):
         """
         Aggiorna lo stato del gioco per un determinato intervallo di tempo.
         Puoi includere qui l'aggiornamento del giocatore, le collisioni, l'animazione,
         lo spostamento della camera, ecc.
         """
-        # Se il gioco è in pausa o terminato, non aggiornare
         if self.start_pause != 0 or self.finish is not None:
             return
-        # Aggiorna il giocatore
         self.player.update()
-
 
         # Gestisci le collisioni
         self.collisioni()
 
-        # Aggiorna l'animazione della scena
         #self.scene.update_animation(delta_time)
 
         # Muovi la camera
