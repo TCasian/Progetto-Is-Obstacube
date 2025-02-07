@@ -99,18 +99,26 @@ class Player(arcade.Sprite):
             self.health = temp
             self.last_danno = time.time()
 
-    def get_surrounding_grid(self, tile_grid, grid_size=10):
+    def get_surrounding_grid(self, tile_grid, grid_size=20):
         player_x = int(self.center_x // TILE_WIDTH)
         player_y = int(self.center_y // TILE_HEIGHT)
 
         player_width_tiles = int(self.width // TILE_WIDTH)
         player_height_tiles = int(self.height // TILE_HEIGHT)
 
-        half_grid = int(grid_size * 0.5)
+        half_grid = grid_size // 2
+
         start_x = max(0, player_x - half_grid)
-        end_x = min(len(tile_grid[0]) - 1, player_x + half_grid)
+        end_x = start_x + grid_size - 1
+        if end_x >= len(tile_grid[0]):
+            end_x = len(tile_grid[0]) - 1
+            start_x = max(0, end_x - grid_size + 1)
+
         start_y = max(0, player_y - half_grid)
-        end_y = min(len(tile_grid) - 1, player_y + half_grid)
+        end_y = start_y + grid_size - 1
+        if end_y >= len(tile_grid):
+            end_y = len(tile_grid) - 1
+            start_y = max(0, end_y - grid_size + 1)
 
         grid = []
         for y in range(start_y, end_y + 1):

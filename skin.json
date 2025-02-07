@@ -23,5 +23,15 @@
         "nome": "zombie",
         "costo": 250,
         "acquistata": false
+    },
+    {
+        "nome": "bip",
+        "costo": 100,
+        "acquistata": false
+    },
+    {
+        "nome": "Epilettico",
+        "costo": 100,
+        "acquistata": false
     }
 ]
