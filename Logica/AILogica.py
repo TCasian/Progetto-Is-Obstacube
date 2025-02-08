@@ -9,7 +9,7 @@ import os
 
 # Usa la GPU se disponibile
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
+print(device)
 
 class DQN(nn.Module):
     def __init__(self, state_shape, action_size, num_entity_types=5):
@@ -54,9 +54,9 @@ class DQNAgent:
         self.action_size = action_size
         self.memory = deque(maxlen=2000)
         self.gamma = 0.99
-        self.epsilon = 1.0
+        self.epsilon = 0
         self.epsilon_min = 0.05
-        self.epsilon_decay = 0.997
+        self.epsilon_decay = 0.9
         self.batch_size = 64
         self.learning_rate = 0.001
 
@@ -73,11 +73,13 @@ class DQNAgent:
         self.target_model.load_state_dict(self.model.state_dict())
 
     def preprocess_state(self, grid):
-        # in array np
-        grid = np.array(grid, dtype=np.int64)
-        if grid.ndim > 2:
-            grid = np.squeeze(grid) # squeeze dimensioni senno non va -> bug
-        return np.where(np.isin(grid, [0, 1, 2, 3, 4, 5]), grid, 0)
+        grid = torch.tensor(grid, dtype=torch.int64, device=device) #per usare gpu con cuda
+
+        grid = grid.squeeze() # per rimuovere dimensioni superflue
+
+        # normalizza i valori da 0 a 5 nel caso di elementi non conformi mette 0
+        grid = torch.where((grid >= 0) & (grid <= 5), grid, torch.tensor(0, device=device))
+        return grid
 
 
     def remember(self, state, action, reward, next_state, done):

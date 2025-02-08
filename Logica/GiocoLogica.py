@@ -32,6 +32,7 @@ class GiocoLogica:
         self.start_pause = 0
         self.saved = False
         self.finish = None
+        self.oggetti_colpiti = None
 
 
     def load_map(self):
@@ -97,7 +98,6 @@ class GiocoLogica:
                         grid[y][x] = 3
                     elif tipo == "cuori":
                         grid[y][x] = 4
-
 
         return grid
 
@@ -241,18 +241,20 @@ class GiocoLogica:
         self._aggiorna_posizione_pulsanti()
 
     def collisioni(self):
-        oggetti_colpiti = {
+        self.oggetti_colpiti = {
             "ostacoli": arcade.check_for_collision_with_list(self.player, self.ostacoli),
             "monete": arcade.check_for_collision_with_list(self.player, self.monete),
             "cuori": arcade.check_for_collision_with_list(self.player, self.cuori),
             "danni": arcade.check_for_collision_with_list(self.player, self.danni)
         }
 
-        if oggetti_colpiti["ostacoli"]:
+
+        if self.oggetti_colpiti["ostacoli"]:
             self.player.center_x -= self.player.change_x
             self.player.center_y -= self.player.change_y
+            #print("COLPITO da collisioni in giocologica")
 
-        for moneta in oggetti_colpiti["monete"]:
+        for moneta in self.oggetti_colpiti["monete"]:
             self.moneteList.append((round(moneta.center_x / self.scaling), round(moneta.center_y / self.scaling)))
             moneta.remove_from_sprite_lists()
             self.player.coins += 1
@@ -262,14 +264,14 @@ class GiocoLogica:
             self.tile_grid = self._build_tile_grid()
             print(f"Moneta raccolta! Monete totali: {self.player.coins}")
 
-        for cuore in oggetti_colpiti["cuori"]:
+        for cuore in self.oggetti_colpiti["cuori"]:
             self.cuoriList.append((round(cuore.center_x / self.scaling), round(cuore.center_y / self.scaling)))
             cuore.remove_from_sprite_lists()
             self.player.add_health(1)
             self.tile_grid = self._build_tile_grid()
             print(f"Vita raccolta! Vita attuale: {self.player.health}")
 
-        if oggetti_colpiti["danni"]:
+        if self.oggetti_colpiti["danni"]:
             self.player.rem_health(1)
             if self.player.health <= 0:
                 self.finish = "Gameover"

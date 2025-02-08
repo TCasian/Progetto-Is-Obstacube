@@ -17,9 +17,20 @@ GRAVITY = 0.5
 TILE_WIDTH = 32
 TILE_HEIGHT = 32
 
+# fase - mappa - reward per next mappa
+
+FASI_TRAINING = {
+    "movimento" : ("intro.tmx", 2800),
+    "ostacoli"  : ("ostacoli.tmx", 5000),
+    "danni"     : ("danni.tmx", 6000),
+    "raccolta"  : ("raccolta.tmx", 7500),
+    "goal"      : ("goal.tmx", 8500)
+}
+
 class GiocoLogicaAi(GiocoLogica):
     def __init__(self, window, mappa, view, training_mode=True):
-        super().__init__(window, mappa, view)
+        self.fase = "movimento"
+        super().__init__(window, FASI_TRAINING[self.fase][0], view)
 
         self.training_mode = training_mode
         self.agent = DQNAgent(state_shape=(20, 20, 1), action_size=5)
@@ -37,12 +48,14 @@ class GiocoLogicaAi(GiocoLogica):
         self.episode_numbers = []
         self.max_x = 0
         self.last_checkpoint = 0
-        self.fase = "movimento"
         self.reward_function = self.get_reward_by_phase
-        self.last_dx = 0
+
         self.multiplier = 3
 
-
+        #attributi per tenere traccia reward cumulativi
+        self.last_dx = 0
+        self.last_colpito = False
+        self.max_x = 0
 
 
     def get_state(self):
@@ -125,21 +138,33 @@ class GiocoLogicaAi(GiocoLogica):
         self.episode_rewards.append(self.total_reward)
         self.episode_numbers.append(self.episode)
 
-        print(f"Episode: {self.episode}, Reward: {self.total_reward}, Epsilon: {self.agent.epsilon}")
+        print(f"Episode: {self.episode}, Reward: {self.total_reward}, Epsilon: {self.agent.epsilon}, Decay {self.agent.epsilon_decay}")
 
         self.plot_rewards()
 
-        if self.episode % 100 == 0:
+        if self.episode > 0 and self.episode % 100 == 0:
             self.agent.update_target_model()
             self.agent.save("pesi.pth")
+            self.agent.epsilon_decay -= 0.05
+            print(f"Decay rate aumentato a {self.agent.epsilon}")
+
         self.episode += 1
-        """
-        if len(self.episode_numbers) >= 150:
-            self.reward_function = self.get_reward_1
-            self.mappa = "test.tmx"
-        if len(self.episode_numbers) >= 600:
-            self.reward_function = self.get_reward_2
-            self.mappa = "foresta.tmx"""
+
+        #print(f"{self.total_reward} > {FASI_TRAINING[self.fase][1]} = {self.total_reward > FASI_TRAINING[self.fase][1]}")
+        if self.total_reward > FASI_TRAINING[self.fase][1]:
+
+            fasi_keys = list(FASI_TRAINING.keys())
+            current_index = fasi_keys.index(self.fase)
+            if current_index < len(fasi_keys) - 1:
+                self.fase = fasi_keys[current_index + 1]
+                self.mappa = FASI_TRAINING[self.fase][0]
+                print(f"Fase cambiata a: {self.fase}, nuova mappa: {self.mappa}, Epsilon 1 decay 0.990")
+                self.agent.epsilon = 1
+                self.agent.epsilon_decay = 0.990
+                #chiamata per aggiornare la lista ostacoli ecc
+                self.load_map()
+                self.episode = 0
+
         if self.agent.epsilon > self.agent.epsilon_min:
             self.agent.epsilon *= self.agent.epsilon_decay
 
@@ -147,53 +172,65 @@ class GiocoLogicaAi(GiocoLogica):
     def get_reward_by_phase(self):
         reward = 0
         fase = self.fase
-        oggetti_colpiti = {
-            "ostacoli": arcade.check_for_collision_with_list(self.player, self.ostacoli),
-            "monete": arcade.check_for_collision_with_list(self.player, self.monete),
-            "cuori": arcade.check_for_collision_with_list(self.player, self.cuori),
-            "danni": arcade.check_for_collision_with_list(self.player, self.danni)
-        }
 
-        current_x = self.player.center_x
-        dx = current_x - self.last_x
 
+        dx = self.player.center_x - self.last_x
+
+        #print(f"{oggetti_colpiti["ostacoli"]}")
 
         if dx < 0:
             reward -= 10  #penalita se torna indietro
             if self.last_dx < 0:
-                reward -= 10 # penalita se continua ad tornare indietro
+                reward -= 20 # penalita se continua ad tornare indietro
         elif dx > 0:
             reward += 10  # reward destra
             if self.last_dx > 0:
-                reward += 10  # reward destra continua
+                reward += 20  # reward destra continua
         elif dx == 0:
             reward -= 15 #penalita per starsi ferm
-            if self.last_dx > 0:
-                reward -= 15 #penalita se si sta ancora fermo
+            if self.last_dx == 0:
+                reward -= 25 #penalita se si sta ancora fermo
 
         if fase != "movimento":
             #fase ostacoli
-            if oggetti_colpiti["ostacoli"]:
-                reward -= 5
-            if fase != "ostacoli":
-                #fase danni
-                if oggetti_colpiti["danni"]:
-                    reward -= 10
-                    if fase != "danni":
-                        #fase raccolta
-                        if oggetti_colpiti["monete"]:
-                            reward += 3
-                        if oggetti_colpiti["cuori"]:
-                            reward += 5
-                            if fase != "raccolta":
-                                #fase goal
-                                if self.finish == "Win":
-                                    reward += 500
-                                if self.finish == "Gameover":
-                                   reward -= 100
+            if self.oggetti_colpiti["ostacoli"]:
+                reward -= 10
+                #print("Colpito -10")
+                if self.last_colpito:
+                    reward -= 20
+                    #print("Colpito ancora -20")
+                self.last_colpito = True
+                if fase != "ostacoli":
+                        #fase danni
+                        if self.oggetti_colpiti["danni"]:
+                            reward -= 10
+                            if fase != "danni":
+                                #fase raccolta
+                                if self.oggetti_colpiti["monete"]:
+                                    reward += 3
+                                if self.oggetti_colpiti["cuori"]:
+                                    reward += 5
+                                    if fase != "raccolta":
+                                        #fase goal
+                                        if self.finish == "Win":
+                                            reward += 500
+                                        if self.finish == "Gameover":
+                                           reward -= 100
+            else:
+                # non ha colpito reward se non è mai arrivato qua (32 px per grid per evitare reward continui ad ogni movimento)
+                if self.player.center_x > self.max_x :
+                    reward += 10
+                    #print("nuovo traguardo +10")
+                    if not self.last_colpito:
+                        reward += 20
+                        #print("nuovo traguardo ancora +20")
+                    self.last_colpito = False
 
-        self.last_x = current_x
+
+        self.last_x = self.player.center_x
         self.last_dx = dx
+        if self.player.center_x > self.max_x:
+            self.max_x = self.player.center_x + 32
 
         return reward
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.10" tiledversion="1.11.2" name="TX Props" tilewidth="32" tileheight="32" tilecount="256" columns="16">
+<tileset version="1.10" tiledversion="1.11.1" name="TX Props" tilewidth="32" tileheight="32" tilecount="256" columns="16">
  <image source="TX Props.png" width="512" height="512"/>
  <tile id="7">
   <properties>
@@ -53,7 +53,7 @@
  </tile>
  <tile id="83">
   <properties>
-   <property name="tipo" value="ostacolo"/>
+   <property name="tipo" value="ostacoli"/>
   </properties>
   <objectgroup draworder="index" id="2">
    <object id="1" x="3" y="0" width="27" height="32"/>
@@ -136,7 +136,7 @@
  </tile>
  <tile id="149">
   <properties>
-   <property name="is_walkable" type="bool" value="false"/>
+   <property name="tipo" value="ostacoli"/>
   </properties>
  </tile>
  <tile id="151">
@@ -236,7 +236,7 @@
  </tile>
  <tile id="245">
   <properties>
-   <property name="tipo" value="ostacoli-pietra"/>
+   <property name="tipo" value="ostacoli"/>
   </properties>
  </tile>
  <tile id="247">
