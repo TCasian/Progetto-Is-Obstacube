@@ -23,6 +23,7 @@ class GiocoLogicaAi(GiocoLogica):
 
         self.training_mode = training_mode
         self.agent = DQNAgent(state_shape=(20, 20, 1), action_size=5)
+        self.agent.load("pesi.pth")
         self.last_state = None
         self.last_action = None
         self.total_reward = 0
@@ -38,7 +39,7 @@ class GiocoLogicaAi(GiocoLogica):
         self.last_checkpoint = 0
         self.fase = "movimento"
         self.reward_function = self.get_reward_by_phase
-
+        self.last_dx = 0
         self.multiplier = 3
 
 
@@ -130,6 +131,7 @@ class GiocoLogicaAi(GiocoLogica):
 
         if self.episode % 100 == 0:
             self.agent.update_target_model()
+            self.agent.save("pesi.pth")
         self.episode += 1
         """
         if len(self.episode_numbers) >= 150:
@@ -152,18 +154,22 @@ class GiocoLogicaAi(GiocoLogica):
             "danni": arcade.check_for_collision_with_list(self.player, self.danni)
         }
 
-
-
         current_x = self.player.center_x
         dx = current_x - self.last_x
 
 
         if dx < 0:
-            reward -= 10 # Penalità verso sinstra
+            reward -= 10  #penalita se torna indietro
+            if self.last_dx < 0:
+                reward -= 10 # penalita se continua ad tornare indietro
         elif dx > 0:
-            reward += 10 # reward destra
+            reward += 10  # reward destra
+            if self.last_dx > 0:
+                reward += 10  # reward destra continua
         elif dx == 0:
-            reward -= 15 #penalita per starsi fermo
+            reward -= 15 #penalita per starsi ferm
+            if self.last_dx > 0:
+                reward -= 15 #penalita se si sta ancora fermo
 
         if fase != "movimento":
             #fase ostacoli
@@ -176,7 +182,7 @@ class GiocoLogicaAi(GiocoLogica):
                     if fase != "danni":
                         #fase raccolta
                         if oggetti_colpiti["monete"]:
-                            reward += 2
+                            reward += 3
                         if oggetti_colpiti["cuori"]:
                             reward += 5
                             if fase != "raccolta":
@@ -187,11 +193,9 @@ class GiocoLogicaAi(GiocoLogica):
                                    reward -= 100
 
         self.last_x = current_x
+        self.last_dx = dx
 
         return reward
-
-
-
 
     def plot_rewards(self):
         plt.figure(figsize=(12, 6))

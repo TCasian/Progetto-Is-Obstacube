@@ -5,6 +5,7 @@ import numpy as np
 import random
 from collections import deque
 import torch.nn.functional as F
+import os
 
 # Usa la GPU se disponibile
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -61,7 +62,9 @@ class DQNAgent:
 
         self.model = DQN(state_shape, action_size).to(device)
         self.target_model = DQN(state_shape, action_size, num_entity_types=5).to(device)
-        self.optimizer = optim.Adam(self.model.parameters(), lr=self.learning_rate)
+
+        # aggiungendo weight decay per regolarizzazione L2 , penalizza pesi troppo profindi ed evita overfitting
+        self.optimizer = optim.Adam(self.model.parameters(), lr=self.learning_rate, weight_decay=0.0001)
         self.criterion = nn.MSELoss()
         self.update_target_model()
         self.reward_normalizer = RewardNormalizer()
@@ -70,7 +73,6 @@ class DQNAgent:
         self.target_model.load_state_dict(self.model.state_dict())
 
     def preprocess_state(self, grid):
-
         # in array np
         grid = np.array(grid, dtype=np.int64)
         if grid.ndim > 2:
@@ -123,8 +125,10 @@ class DQNAgent:
         torch.save(self.model.state_dict(), name)
 
     def load(self, name):
-        self.model.load_state_dict(torch.load(name))
-        self.model.to(device)
+        if os.path.exists(name):
+            self.model.load_state_dict(torch.load(name))
+            self.model.to(device) # per il corretto device cpu o gpu
+            print(f"pesi caricati da {name}")
 
 
 class RewardNormalizer:
