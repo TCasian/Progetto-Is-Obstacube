@@ -12,7 +12,7 @@ from utils.RoundedButtons import RoundedButton
 from Logica.GiocoLogica import GiocoLogica
 
 TILE_SCALING = 1.0
-PLAYER_SPEED = 5
+PLAYER_SPEED = 10
 GRAVITY = 0.5
 TILE_WIDTH = 32
 TILE_HEIGHT = 32
@@ -44,13 +44,10 @@ class GiocoLogicaAi(GiocoLogica):
 
 
 
-
-
     def get_state(self):
         """
         crea una rappresentazione dello state attorno al player
         """
-
         grid = self.player.get_surrounding_grid(self.tile_grid)
         rows = len(grid)
         cols = len(grid[0]) if rows > 0 else 0
@@ -58,11 +55,11 @@ class GiocoLogicaAi(GiocoLogica):
         for i in range(rows):
             for j in range(cols):
                 cell = grid[i][j]
-                if cell == "ostacoli":
+                if cell == 1:
                     state[i][j][0] = -1
-                elif cell == "monete":
+                elif cell == 3:
                     state[i][j][0] = 1
-                elif cell == "danni":
+                elif cell == 2:
                     state[i][j][0] = -0.5
         return state
 
@@ -88,7 +85,7 @@ class GiocoLogicaAi(GiocoLogica):
             self.player.change_x = 0
             self.last_action = 4
             self.player.change_y = 0
-        self.update()
+        self.update(1 / 500)
 
         return self.get_state(), self.reward_function(), self.finish is not None
 
@@ -206,7 +203,7 @@ class GiocoLogicaAi(GiocoLogica):
         plt.savefig('training_rewards.png')
         plt.close()
 
-    def update(self, delta_time=10):
+    def update(self, delta_time):
         """
         Aggiorna lo stato del gioco per un determinato intervallo di tempo.
         Puoi includere qui l'aggiornamento del giocatore, le collisioni, l'animazione,
@@ -219,7 +216,7 @@ class GiocoLogicaAi(GiocoLogica):
         # Gestisci le collisioni
         self.collisioni()
 
-        #self.scene.update_animation(delta_time)
+        self.scene.update_animation(delta_time)
 
         # Muovi la camera
         self._muovi_camera()

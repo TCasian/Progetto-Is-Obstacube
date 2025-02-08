@@ -126,7 +126,7 @@ class Player(arcade.Sprite):
             for x in range(start_x, end_x + 1):
                 if (player_x <= x < player_x + player_width_tiles and
                         player_y <= y < player_y + player_height_tiles):
-                    row.append("PLAYER")
+                    row.append(5)
                 else:
                     row.append(tile_grid[y][x])
             grid.append(row)

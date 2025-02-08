@@ -3,7 +3,7 @@
  <image source="coin_gold.png" width="256" height="32"/>
  <tile id="0">
   <properties>
-   <property name="tipo" value="monete-moneta"/>
+   <property name="tipo" value="monete"/>
   </properties>
   <animation>
    <frame tileid="0" duration="100"/>

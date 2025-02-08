@@ -8,7 +8,7 @@ from schermate.ImpostazioniScreen import ImpostazioniScreen
 from utils.RoundedButtons import RoundedButton
 
 TILE_SCALING = 1.0
-PLAYER_SPEED = 5
+PLAYER_SPEED = 10
 GRAVITY = 0.5
 TILE_WIDTH = 32
 TILE_HEIGHT = 32
@@ -81,14 +81,23 @@ class GiocoLogica:
         print("\n")
 
     def _build_tile_grid(self):
-        grid = [["[]" for _ in range(self.tilemap.width)] for _ in range(self.tilemap.height)]
+        grid = [[0 for _ in range(self.tilemap.width)] for _ in range(self.tilemap.height)]
 
         for sprites in [self.ostacoli, self.monete, self.cuori, self.danni]:
             for sprite in sprites:
                 x = int(sprite.center_x // self.tilemap.tile_width)
                 y = int(sprite.center_y // self.tilemap.tile_height)
                 if 0 <= x < self.tilemap.width and 0 <= y < self.tilemap.height:
-                    grid[y][x] = sprite.properties.get("tipo", "diocane")
+                    tipo =  sprite.properties.get("tipo", "?")
+                    if tipo == "ostacoli":
+                        grid[y][x] = 1
+                    elif tipo == "danni":
+                        grid[y][x] = 2
+                    elif tipo == "monete":
+                        grid[y][x] = 3
+                    elif tipo == "cuori":
+                        grid[y][x] = 4
+
 
         return grid
 

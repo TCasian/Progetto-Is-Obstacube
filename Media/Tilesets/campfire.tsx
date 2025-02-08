@@ -3,7 +3,7 @@
  <image source="campfire.png" width="320" height="32"/>
  <tile id="0">
   <properties>
-   <property name="tipo " value="danni-fuoco"/>
+   <property name="tipo " value="danni"/>
   </properties>
   <animation>
    <frame tileid="0" duration="100"/>
@@ -18,37 +18,37 @@
  </tile>
  <tile id="1">
   <properties>
-   <property name="tipo" value="danni-fuoco"/>
+   <property name="tipo" value="danni"/>
   </properties>
  </tile>
  <tile id="2">
   <properties>
-   <property name="tipo" value="danni-fuoco"/>
+   <property name="tipo" value="danni"/>
   </properties>
  </tile>
  <tile id="3">
   <properties>
-   <property name="tipo" value="danni-fuoco"/>
+   <property name="tipo" value="danni"/>
   </properties>
  </tile>
  <tile id="4">
   <properties>
-   <property name="tipo" value="danni-fuoco"/>
+   <property name="tipo" value="danni"/>
   </properties>
  </tile>
  <tile id="5">
   <properties>
-   <property name="tipo" value="danni-fuoco"/>
+   <property name="tipo" value="danni"/>
   </properties>
  </tile>
  <tile id="8">
   <properties>
-   <property name="tipo" value="danni-fuoco"/>
+   <property name="tipo" value="danni"/>
   </properties>
  </tile>
  <tile id="9">
   <properties>
-   <property name="tipo" value="danni-fuoco"/>
+   <property name="tipo" value="danni"/>
   </properties>
  </tile>
 </tileset>

@@ -3,27 +3,27 @@
  <image source="spike-animation.png" width="190" height="32"/>
  <tile id="0">
   <properties>
-   <property name="tipo" value="danni-spike"/>
+   <property name="tipo" value="danni"/>
   </properties>
  </tile>
  <tile id="1">
   <properties>
-   <property name="tipo" value="danni-spike"/>
+   <property name="tipo" value="danni"/>
   </properties>
  </tile>
  <tile id="2">
   <properties>
-   <property name="tipo" value="danni-spike"/>
+   <property name="tipo" value="danni"/>
   </properties>
  </tile>
  <tile id="3">
   <properties>
-   <property name="tipo" value="danni-spike"/>
+   <property name="tipo" value="danni"/>
   </properties>
  </tile>
  <tile id="4">
   <properties>
-   <property name="tipo" value="danni-spike"/>
+   <property name="tipo" value="danni"/>
   </properties>
   <animation>
    <frame tileid="1" duration="100"/>

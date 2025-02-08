@@ -8,15 +8,7 @@ import torch.nn.functional as F
 
 # Usa la GPU se disponibile
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-# config.py
-ENTITY_MAPPING = {
-    'empty': 0,
-    'ostacoli': 1,
-    'danni': 2,
-    'moneta': 3,
-    'cuori': 4,
-    'player': 5
-}
+
 
 class DQN(nn.Module):
     def __init__(self, state_shape, action_size, num_entity_types=5):
@@ -43,6 +35,7 @@ class DQN(nn.Module):
 
     def forward(self, x):
         x = self.embedding(x.long())
+        #print(f"Shape dopo embedding: {x.shape}")
         x = x.permute(0, 3, 1, 2)
         x = F.relu(self.conv1(x))
         x = F.relu(self.conv2(x))
@@ -76,20 +69,14 @@ class DQNAgent:
     def update_target_model(self):
         self.target_model.load_state_dict(self.model.state_dict())
 
-
     def preprocess_state(self, grid):
-            return np.array([
-                [
-                    1 if 'ostacoli' in cell else
-                    1 if 'ostacolo' in cell else
-                    2 if 'danni' in cell else
-                    3 if 'moneta' in cell else
-                    4 if 'cuori' in cell else
-                    5 if 'player' in cell else 0
-                    for cell in row
-                ]
-                for row in grid
-            ], dtype=np.int64)
+
+        # in array np
+        grid = np.array(grid, dtype=np.int64)
+        if grid.ndim > 2:
+            grid = np.squeeze(grid) # squeeze dimensioni senno non va -> bug
+        return np.where(np.isin(grid, [0, 1, 2, 3, 4, 5]), grid, 0)
+
 
     def remember(self, state, action, reward, next_state, done):
         processed_state = self.preprocess_state(state)
@@ -130,7 +117,6 @@ class DQNAgent:
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
-
 
 
     def save(self, name):
