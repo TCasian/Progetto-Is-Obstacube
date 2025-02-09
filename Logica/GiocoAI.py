@@ -30,7 +30,8 @@ FASI_TRAINING = {
 
 #Episode: 187, Reward: 1665, Epsilon: 0.4433730476621029, Decay 0.993 per ostacoli migliroe
 #Episode: 240, Reward: -195, Epsilon: 0.2496820394481045, Decay 0.988  per ostacoli migliroe1
-
+#Episode: 8, Reward: -305, Epsilon: 0.6244504783240336, Decay 0.995
+# Episode: 38, Reward: 890, Epsilon: 0.5372673201835692, Decay 0.995
 
 class GiocoLogicaAi(GiocoLogica):
     def __init__(self, window, mappa, view, training_mode=True):
@@ -57,11 +58,12 @@ class GiocoLogicaAi(GiocoLogica):
 
         self.multiplier = 3
 
+
         #attributi per tenere traccia reward cumulativi
         self.last_dx = 0
         self.last_colpito = False
         self.max_x = 0
-        self.collision_cooldown = 0.3
+        self.collision_cooldown = 0.5
         self.last_hit_time = 0
 
 
@@ -106,7 +108,7 @@ class GiocoLogicaAi(GiocoLogica):
             self.player.change_x = 0
             self.last_action = 4
             self.player.change_y = 0
-        self.update(1 / 120)
+        self.update(1 / 240)
 
         return self.get_state(), self.reward_function(), self.finish is not None
 
@@ -152,7 +154,7 @@ class GiocoLogicaAi(GiocoLogica):
         if self.episode > 0 and self.episode % 100 == 0:
             self.agent.update_target_model()
             self.agent.save("pesi.pth")
-            self.agent.epsilon_decay -= 0.005
+            self.agent.epsilon_decay -= 0.002
             print(f"Decay rate aumentato a {self.agent.epsilon}")
 
         self.episode += 1
@@ -165,9 +167,9 @@ class GiocoLogicaAi(GiocoLogica):
             if current_index < len(fasi_keys) - 1:
                 self.fase = fasi_keys[current_index + 1]
                 self.mappa = FASI_TRAINING[self.fase][0]
-                print(f"Fase cambiata a: {self.fase}, nuova mappa: {self.mappa}, Epsilon 1 decay 0.990")
+                print(f"Fase cambiata a: {self.fase}, nuova mappa: {self.mappa}, Epsilon 1 decay {self.agent.epsilon_decay}")
                 self.agent.epsilon = 1
-                self.agent.epsilon_decay = 0.998
+                self.agent.epsilon_decay = 0.995
                 #chiamata per aggiornare la lista ostacoli ecc
                 self.load_map()
                 self.episode = 0

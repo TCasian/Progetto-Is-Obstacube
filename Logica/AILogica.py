@@ -5,6 +5,8 @@ import numpy as np
 import random
 from collections import deque
 import torch.nn.functional as F
+from torch.optim.lr_scheduler import ReduceLROnPlateau
+
 import os
 
 from torch.utils.tensorboard import SummaryWriter
@@ -58,20 +60,24 @@ class DQNAgent:
         self.gamma = 0.99
         self.epsilon = 0
         self.epsilon_min = 0.05
-        self.epsilon_decay = 0.998
+        self.epsilon_decay = 0.995
         self.batch_size = 64
-        self.learning_rate = 0.001
+        self.learning_rate = 0.005
 
         self.model = DQN(state_shape, action_size).to(device)
         self.target_model = DQN(state_shape, action_size, num_entity_types=5).to(device)
 
         # aggiungendo weight decay per regolarizzazione L2 , penalizza pesi troppo profindi ed evita overfitting
         self.optimizer = optim.Adam(self.model.parameters(), lr=self.learning_rate, weight_decay=0.0001)
+
+        # se la loss non migliora ogni 10 iterazioni il learning rate si diminuisce del 10%
+        self.scheduler = ReduceLROnPlateau(self.optimizer, mode='min', factor=0.9, patience=10, verbose=True)
+
         self.criterion = nn.MSELoss()
         self.update_target_model()
         self.reward_normalizer = RewardNormalizer()
 
-        self.writer = SummaryWriter('runs')
+        self.writer = SummaryWriter('runs') # dove salvare i file report di TensorBoard
         self.global_step = 0
 
     def update_target_model(self):
@@ -108,8 +114,19 @@ class DQNAgent:
         minibatch = random.sample(self.memory, self.batch_size)
         states, actions, rewards, next_states, dones = zip(*minibatch)
 
+        # se stato è gia tensore si sposta sulla cpu per numpy
+        if isinstance(states[0], torch.Tensor):
+            states = torch.stack(states).cpu()
+            next_states = torch.stack(next_states).cpu()
+        else:
+            # se non sono tensori si creano e si si spotano sulla cpu
+            states = torch.tensor(np.array(states), dtype=torch.long).cpu()
+            next_states = torch.tensor(np.array(next_states), dtype=torch.long).cpu()
+
         next_states = torch.tensor(np.array(next_states), dtype=torch.long).to(device)
-        states = torch.tensor(np.array(states), dtype=torch.long).to(device)
+        states = torch.tensor(np.array(states.cpu()), dtype=torch.long).to(device)
+
+
 
         actions = torch.tensor(actions, dtype=torch.long).to(device)
         # da reward ad array numpy
@@ -129,9 +146,16 @@ class DQNAgent:
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
+        # avanza lo scheduler e registra loss
+        self.scheduler.step(loss.item())
 
         # aggiunge il valore di loss per tensorboard
         self.writer.add_scalar('Loss/train', loss.item(), global_step=self.global_step)
+        # aggiunge il valore di epsilon
+        self.writer.add_scalar('Epsilon', self.epsilon, global_step=self.global_step)
+        #aggiunge media delle azioni per vedere se il modello è ottimistico (valori concentrati simili) o sta esplorando tentando varie cose
+        self.writer.add_scalar('Azioni/Media_Scelte', actions.float().mean().item(), global_step=self.global_step)
+
         self.global_step += 1
 
 
