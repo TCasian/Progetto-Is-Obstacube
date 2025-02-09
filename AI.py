@@ -13,7 +13,7 @@ def main():
     ImpostazioniLogica().audio_var = False
     game_view = GiocoScreen("intro.tmx", training_mode=True)
     window.show_view(game_view)
-    window.set_update_rate(1 / 500)
+    window.set_update_rate(1 / 120)
     arcade.run()
 
 if __name__ == "__main__":

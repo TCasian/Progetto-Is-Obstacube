@@ -17,8 +17,8 @@ class Player(arcade.Sprite):
         super().__init__()
         self.center_x = x
         self.center_y = y
-        self.width = 50
-        self.height = 50
+        self.width = 32
+        self.height = 32
         self.color = arcade.color.WHITE
         self.change_x = 0
         self.change_y = 0
@@ -33,6 +33,7 @@ class Player(arcade.Sprite):
         self.time_since_last_frame = 0
 
         self.load_frames_from_tsx(f"Media/Skins/{load_player()["corrente"]}.tsx")
+        self.ostacolo_vicino = False
 
     def load_frames_from_tsx(self, tsx_path):
         tree = ET.parse(tsx_path)
@@ -127,6 +128,7 @@ class Player(arcade.Sprite):
                 if (player_x <= x < player_x + player_width_tiles and
                         player_y <= y < player_y + player_height_tiles):
                     row.append(5)
+                    self.check_ostacolo(x, y, tile_grid)
                 else:
                     row.append(tile_grid[y][x])
             grid.append(row)
@@ -137,3 +139,19 @@ class Player(arcade.Sprite):
        a = load_player()
        print(a["monete"])
        save_player(a["monete"]+self.coins, a["corrente"])
+
+
+    def check_ostacolo(self, x, y, tile_grid):
+        attorno = [(-1, -1), (0, -1), (1, -1), (-1, 0), (1, 0), (-1, 1), (0, 1), (1, 1)]
+        for dx, dy in attorno:
+            check_x = x + dx
+            check_y = y + dy
+
+            if 0 <= check_x < len(tile_grid[0]) and 0 <= check_y < len(tile_grid):
+                if tile_grid[check_y][check_x] == 1:
+                    self.ostacolo_vicino = True
+                    return
+
+        self.ostacolo_vicino = False
+        return
+

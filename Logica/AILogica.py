@@ -7,6 +7,8 @@ from collections import deque
 import torch.nn.functional as F
 import os
 
+from torch.utils.tensorboard import SummaryWriter
+
 # Usa la GPU se disponibile
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(device)
@@ -56,7 +58,7 @@ class DQNAgent:
         self.gamma = 0.99
         self.epsilon = 0
         self.epsilon_min = 0.05
-        self.epsilon_decay = 0.9
+        self.epsilon_decay = 0.998
         self.batch_size = 64
         self.learning_rate = 0.001
 
@@ -69,6 +71,9 @@ class DQNAgent:
         self.update_target_model()
         self.reward_normalizer = RewardNormalizer()
 
+        self.writer = SummaryWriter('runs')
+        self.global_step = 0
+
     def update_target_model(self):
         self.target_model.load_state_dict(self.model.state_dict())
 
@@ -79,6 +84,7 @@ class DQNAgent:
 
         # normalizza i valori da 0 a 5 nel caso di elementi non conformi mette 0
         grid = torch.where((grid >= 0) & (grid <= 5), grid, torch.tensor(0, device=device))
+
         return grid
 
 
@@ -106,9 +112,11 @@ class DQNAgent:
         states = torch.tensor(np.array(states), dtype=torch.long).to(device)
 
         actions = torch.tensor(actions, dtype=torch.long).to(device)
-        # Process rewards as NumPy array, normalize, then convert to tensor
+        # da reward ad array numpy
         rewards_np = np.array(rewards, dtype=np.float32)
+        # normalizzazione dei reward
         rewards_np = self.reward_normalizer.normalize(rewards_np)
+        # conversione in tensore
         rewards = torch.tensor(rewards_np, dtype=torch.float32).to(device)
         dones = torch.tensor(dones, dtype=torch.bool).to(device)
 
@@ -121,6 +129,10 @@ class DQNAgent:
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
+
+        # aggiunge il valore di loss per tensorboard
+        self.writer.add_scalar('Loss/train', loss.item(), global_step=self.global_step)
+        self.global_step += 1
 
 
     def save(self, name):
@@ -163,6 +175,6 @@ class RewardNormalizer:
 
             self.count = total_count
 
-        # Normalize and clip
+        # normalizzazione e clip
         normalized_rewards = (rewards - self.mean) / (self.std + self.eps)
         return np.clip(normalized_rewards, *self.clip_range)

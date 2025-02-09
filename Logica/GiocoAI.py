@@ -10,6 +10,7 @@ from Logica.PlayerLogica import Player
 from schermate.ImpostazioniScreen import ImpostazioniScreen
 from utils.RoundedButtons import RoundedButton
 from Logica.GiocoLogica import GiocoLogica
+import math
 
 TILE_SCALING = 1.0
 PLAYER_SPEED = 10
@@ -56,6 +57,8 @@ class GiocoLogicaAi(GiocoLogica):
         self.last_dx = 0
         self.last_colpito = False
         self.max_x = 0
+        self.collision_cooldown = 0.3
+        self.last_hit_time = 0
 
 
     def get_state(self):
@@ -99,7 +102,7 @@ class GiocoLogicaAi(GiocoLogica):
             self.player.change_x = 0
             self.last_action = 4
             self.player.change_y = 0
-        self.update(1 / 500)
+        self.update(1 / 120)
 
         return self.get_state(), self.reward_function(), self.finish is not None
 
@@ -145,7 +148,7 @@ class GiocoLogicaAi(GiocoLogica):
         if self.episode > 0 and self.episode % 100 == 0:
             self.agent.update_target_model()
             self.agent.save("pesi.pth")
-            self.agent.epsilon_decay -= 0.05
+            self.agent.epsilon_decay -= 0.005
             print(f"Decay rate aumentato a {self.agent.epsilon}")
 
         self.episode += 1
@@ -160,7 +163,7 @@ class GiocoLogicaAi(GiocoLogica):
                 self.mappa = FASI_TRAINING[self.fase][0]
                 print(f"Fase cambiata a: {self.fase}, nuova mappa: {self.mappa}, Epsilon 1 decay 0.990")
                 self.agent.epsilon = 1
-                self.agent.epsilon_decay = 0.990
+                self.agent.epsilon_decay = 0.998
                 #chiamata per aggiornare la lista ostacoli ecc
                 self.load_map()
                 self.episode = 0
@@ -172,7 +175,7 @@ class GiocoLogicaAi(GiocoLogica):
     def get_reward_by_phase(self):
         reward = 0
         fase = self.fase
-
+        current_time = time.time()
 
         dx = self.player.center_x - self.last_x
 
@@ -194,12 +197,16 @@ class GiocoLogicaAi(GiocoLogica):
         if fase != "movimento":
             #fase ostacoli
             if self.oggetti_colpiti["ostacoli"]:
-                reward -= 10
-                #print("Colpito -10")
-                if self.last_colpito:
-                    reward -= 20
-                    #print("Colpito ancora -20")
-                self.last_colpito = True
+                if current_time - self.last_hit_time > self.collision_cooldown:
+                    reward -= 10 #
+                    #print("Colpito -10")
+                    if self.last_colpito:
+                        reward -= 20  # penalita aggiuntiva se continua a colpire
+                        #print("Colpito ancora -20")
+                    self.last_hit_time = current_time
+                    self.last_colpito = True
+                else:
+                    self.last_colpito = False
                 if fase != "ostacoli":
                         #fase danni
                         if self.oggetti_colpiti["danni"]:
@@ -218,13 +225,17 @@ class GiocoLogicaAi(GiocoLogica):
                                            reward -= 100
             else:
                 # non ha colpito reward se non è mai arrivato qua (32 px per grid per evitare reward continui ad ogni movimento)
-                if self.player.center_x > self.max_x :
+                if self.player.center_x > self.max_x:
                     reward += 10
                     #print("nuovo traguardo +10")
                     if not self.last_colpito:
                         reward += 20
                         #print("nuovo traguardo ancora +20")
                     self.last_colpito = False
+                    # se era anche vicino ad un ostacolo ma non ha colpito
+                    if self.player.ostacolo_vicino:
+                        reward += 10
+
 
 
         self.last_x = self.player.center_x
@@ -295,3 +306,4 @@ class GiocoLogicaAi(GiocoLogica):
         key = self.view.get_key()
         self.last_action = key
         return key
+
