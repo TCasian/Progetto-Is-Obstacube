@@ -63,7 +63,7 @@ class GiocoLogicaAi(GiocoLogica):
         self.last_dx = 0
         self.last_colpito = False
         self.max_x = 0
-        self.collision_cooldown = 0.5
+        self.collision_cooldown = 1
         self.last_hit_time = 0
 
 
@@ -207,7 +207,7 @@ class GiocoLogicaAi(GiocoLogica):
                     reward -= 10 #
                     #print("Colpito -10")
                     if self.last_colpito:
-                        reward -= 20  # penalita aggiuntiva se continua a colpire
+                        reward -= 10  # penalita aggiuntiva se continua a colpire
                         #print("Colpito ancora -20")
                     self.last_hit_time = current_time
                     self.last_colpito = True
