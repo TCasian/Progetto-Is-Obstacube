@@ -12,7 +12,7 @@ def main():
     window = arcade.Window(larghezza_schermo, altezza_schermo, "Obstacube", visible=True)
     ImpostazioniLogica().audio_var = False
 
-    game_view = GiocoScreen("intro.tmx", training_mode=True)
+    game_view = GiocoScreen("intro.tmx", training_mode=True, multiple = 5)
     window.show_view(game_view)
     window.set_update_rate(1 / 240)
     #window.set_draw_rate(1/240)

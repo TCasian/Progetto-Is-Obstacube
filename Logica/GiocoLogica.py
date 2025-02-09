@@ -14,7 +14,7 @@ TILE_WIDTH = 32
 TILE_HEIGHT = 32
 
 class GiocoLogica:
-    def __init__(self, window, mappa, view):
+    def     __init__(self, window, mappa, view, multiple = 1):
         self.camera = arcade.camera.Camera2D()
         self.window = window
         self.view = view
@@ -26,13 +26,15 @@ class GiocoLogica:
         self.moneteList = []
         self.playerposition_x = 150
         self.playerposition_y = 300
-        self.player = Player(150, 300)
+        self.players = [Player(150, 300) for _ in range(0, multiple)]  # Supporta più agenti
+        self.player = self.players[0]
         self.start_time = time.time()
         self.tile_grid = self._build_tile_grid()
         self.start_pause = 0
         self.saved = False
         self.finish = None
-        self.oggetti_colpiti = None
+        self.oggetti_colpiti = [None for _ in range(0, multiple)]
+        self.multiple = multiple
 
 
     def load_map(self):
@@ -241,46 +243,48 @@ class GiocoLogica:
         self._aggiorna_posizione_pulsanti()
 
     def collisioni(self):
-        self.oggetti_colpiti = {
-            "ostacoli": arcade.check_for_collision_with_list(self.player, self.ostacoli),
-            "monete": arcade.check_for_collision_with_list(self.player, self.monete),
-            "cuori": arcade.check_for_collision_with_list(self.player, self.cuori),
-            "danni": arcade.check_for_collision_with_list(self.player, self.danni)
-        }
+        for index in range(self.multiple):
+            self.oggetti_colpiti[index] = {
+                "ostacoli": arcade.check_for_collision_with_list(self.players[index], self.ostacoli),
+                "monete": arcade.check_for_collision_with_list(self.players[index], self.monete),
+                "cuori": arcade.check_for_collision_with_list(self.players[index], self.cuori),
+                "danni": arcade.check_for_collision_with_list(self.players[index], self.danni)
+            }
 
 
-        if self.oggetti_colpiti["ostacoli"]:
-            self.player.center_x -= self.player.change_x
-            self.player.center_y -= self.player.change_y
-            #print("COLPITO da collisioni in giocologica")
+            if self.oggetti_colpiti[index]["ostacoli"]:
+                self.players[index].center_x -= self.players[index].change_x
+                self.players[index].center_y -= self.players[index].change_y
+                #print("COLPITO da collisioni in giocologica")
 
-        for moneta in self.oggetti_colpiti["monete"]:
-            self.moneteList.append((round(moneta.center_x / self.scaling), round(moneta.center_y / self.scaling)))
-            moneta.remove_from_sprite_lists()
-            self.player.coins += 1
-            if ImpostazioniLogica().is_audio():
-                sound = arcade.Sound("Media/Sounds/coin_sound.mp3")
-                sound.play(volume=0.5)
-            self.tile_grid = self._build_tile_grid()
-            print(f"Moneta raccolta! Monete totali: {self.player.coins}")
+            for moneta in self.oggetti_colpiti[index]["monete"]:
+                self.moneteList.append((round(moneta.center_x / self.scaling), round(moneta.center_y / self.scaling)))
+                moneta.remove_from_sprite_lists()
+                self.players[index].coins += 1
+                if ImpostazioniLogica().is_audio():
+                    sound = arcade.Sound("Media/Sounds/coin_sound.mp3")
+                    sound.play(volume=0.5)
+                self.tile_grid = self._build_tile_grid()
+                print(f"Moneta raccolta! Monete totali: {self.player.coins}")
 
-        for cuore in self.oggetti_colpiti["cuori"]:
-            self.cuoriList.append((round(cuore.center_x / self.scaling), round(cuore.center_y / self.scaling)))
-            cuore.remove_from_sprite_lists()
-            self.player.add_health(1)
-            self.tile_grid = self._build_tile_grid()
-            print(f"Vita raccolta! Vita attuale: {self.player.health}")
+            for cuore in self.oggetti_colpiti[index]["cuori"]:
+                self.cuoriList.append((round(cuore.center_x / self.scaling), round(cuore.center_y / self.scaling)))
+                cuore.remove_from_sprite_lists()
+                self.players[index].add_health(1)
+                self.tile_grid = self._build_tile_grid()
+                print(f"Vita raccolta! Vita attuale: {self.player.health}")
 
-        if self.oggetti_colpiti["danni"]:
-            self.player.rem_health(1)
-            if self.player.health <= 0:
-                self.finish = "Gameover"
+            if self.oggetti_colpiti[index]["danni"]:
+                self.players[index].rem_health(1)
+                if self.players[index].health <= 0:
+                    self.finish = "Gameover"
 
-        map_width = self.tilemap.width * self.tilemap.tile_width
-        if ImpostazioniLogica().is_fullscreen():
-            map_width *= 1.3
-        if self.player.center_x > map_width - 48:
-            self.finish = "Win"
+            map_width = self.tilemap.width * self.tilemap.tile_width
+            if ImpostazioniLogica().is_fullscreen():
+                map_width *= 1.3
+            if self.players[index].center_x > map_width - 48:
+                self.finish[index] = "Win"
+
 
     def pausa(self):
         if self.finish == "Gameover":

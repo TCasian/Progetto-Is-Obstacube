@@ -63,6 +63,7 @@ class DQNAgent:
         self.epsilon_decay = 0.995
         self.batch_size = 64
         self.learning_rate = 0.005
+        self.rewards = 0
 
         self.model = DQN(state_shape, action_size).to(device)
         self.target_model = DQN(state_shape, action_size, num_entity_types=5).to(device)
@@ -167,6 +168,8 @@ class DQNAgent:
             self.model.load_state_dict(torch.load(name))
             self.model.to(device) # per il corretto device cpu o gpu
             print(f"pesi caricati da {name}")
+
+
 
 
 class RewardNormalizer:

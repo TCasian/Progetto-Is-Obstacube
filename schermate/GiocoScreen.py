@@ -28,7 +28,6 @@ class GiocoScreen(arcade.View):
     def on_draw(self):
         self.clear()
         self.gioco.camera.use()
-
         self.gioco.scene.draw()
         self.gioco.player.draw()
 

@@ -1,3 +1,5 @@
+from random import randint
+
 import arcade
 import time
 
@@ -15,11 +17,12 @@ TILE_WIDTH = 32
 TILE_HEIGHT = 32
 
 class GiocoScreen(arcade.View):
-    def __init__(self, mappa="test.tmx", training_mode=False):
+    def __init__(self, mappa="test.tmx", training_mode=False, multiple = 1):
         super().__init__()
         self.training_mode = training_mode
-        self.gioco = GiocoLogicaAi(self.window, mappa, self, training_mode)
-        self.flag = False
+        self.gioco = GiocoLogicaAi(self.window, mappa, self, training_mode, multiple)
+        self.train_gen = self.gioco.train_episode()
+        self.flag = True
         self.key = 4
 
     def on_show_view(self):
@@ -33,7 +36,11 @@ class GiocoScreen(arcade.View):
         self.gioco.camera.use()
 
         self.gioco.scene.draw()
-        self.gioco.player.draw()
+        for index in range(self.gioco.multiple):
+            self.gioco.players[index].draw()
+            #self.gioco.players[index].center_x += randint(0, 10)
+            #self.gioco.players[index].center_y +=  randint(0, 10)
+
 
         if not self.gioco.finish:
             self._draw_info()
