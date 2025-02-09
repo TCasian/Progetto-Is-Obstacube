@@ -98,6 +98,19 @@ class GiocoScreen(arcade.View):
             self.gioco.print_player_grid()
         elif key == arcade.key.Z:
             self.gioco.flag = not self.gioco.flag
+        elif key == arcade.key.NUM_1:
+            print(f"aumento di 0.005 epsilon da {self.gioco.agent.epsilon} a {self.gioco.agent.epsilon+0.005}")
+            self.gioco.agent.epsilon += 0.005
+        elif key == arcade.key.NUM_2:
+            print(f"diminuzione di 0.005 epsilon da {self.gioco.agent.epsilon} a {self.gioco.agent.epsilon-0.005}")
+            self.gioco.agent.epsilon -= 0.005
+        elif key == arcade.key.NUM_3:
+            print(f"aumento di 0.005 decay rate da {self.gioco.agent.epsilon_decay} a {self.gioco.agent.epsilon_decay + 0.005}")
+            self.gioco.agent.epsilon_decay += 0.005
+        elif key == arcade.key.NUM_4:
+            print(f"diminuzione di 0.005 decay rate da {self.gioco.agent.epsilon_decay} a {self.gioco.agent.epsilon_decay - 0.005}")
+            self.gioco.agent.epsilon_decay -= 0.005
+
 
     def on_key_release(self, key, modifiers):
         if key in (arcade.key.W, arcade.key.S):

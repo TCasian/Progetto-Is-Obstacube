@@ -28,6 +28,10 @@ FASI_TRAINING = {
     "goal"      : ("goal.tmx", 8500)
 }
 
+#Episode: 187, Reward: 1665, Epsilon: 0.4433730476621029, Decay 0.993 per ostacoli migliroe
+#Episode: 240, Reward: -195, Epsilon: 0.2496820394481045, Decay 0.988  per ostacoli migliroe1
+
+
 class GiocoLogicaAi(GiocoLogica):
     def __init__(self, window, mappa, view, training_mode=True):
         self.fase = "movimento"
