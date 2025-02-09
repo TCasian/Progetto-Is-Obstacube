@@ -1,4 +1,6 @@
 import arcade
+
+from schermate.AiScreen import GiocoScreen
 from schermate.ImpostazioniScreen import ImpostazioniScreen
 from schermate.MappeScreen import MappeScreen
 from schermate.ShopScreen import ShopScreen
@@ -90,9 +92,10 @@ class MenuLogica:
             return False
 
     def create_popup_buttons(self):
+        self.popup_buttons = []
         popup_buttons_data = [
             ("Standard", lambda: self.window.show_view(MappeScreen(False))),
-            ("AI", lambda: self._on_click_non_disponibile()),
+            ("AI", lambda: self.window.show_view(GiocoScreen("intro.tmx"))),
         ]
         button_height = 50
         button_spacing = 40

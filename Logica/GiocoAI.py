@@ -18,7 +18,7 @@ PLAYER_SPEED = 10
 GRAVITY = 0.5
 TILE_WIDTH = 32
 TILE_HEIGHT = 32
-
+episode_rewards = []
 # fase - mappa - reward per next mappa
 
 FASI_TRAINING = {
@@ -173,6 +173,7 @@ class GiocoLogicaAi(GiocoLogica):
 
                     states[i] = next_states[i]
                     total_rewards[i] += rewards[i]
+                    agent.rewards = total_rewards[i]
                     dones[i] = dones_list[i]
 
             step_count += 1
@@ -181,22 +182,26 @@ class GiocoLogicaAi(GiocoLogica):
         self.episode_rewards.append(np.mean(total_rewards))
         self.episode_numbers.append(self.episode)
 
-        print(f"Episode: {self.episode}, Mean Reward: {np.mean(total_rewards)}, Epsilon: {self.agents[0].epsilon}")
+
+        for i, agent in enumerate(self.agents):
+            print(f"Agente:{i}, Episode: {self.episode}, Reward: {total_rewards[i]}, Epsilon: {self.agents[0].epsilon}")
 
         self.plot_rewards()
 
         # Aggiornamento modelli ogni 100 episodi
         if self.episode > 0 and self.episode % 100 == 0:
-            for i, agent in enumerate(self.agents):
-                agent.update_target_model()
-                agent.save(f"pesi_agent_{i}.pth")
-                agent.epsilon_decay -= 0.002
-                print(f"Decay rate aumentato per Agent {i}: {agent.epsilon}")
-
+            best_agent = max(self.agents, key=lambda agent: agent.reward)
+            best_agent.update_target_model()
+            best_agent.save(f"pesi.pth")
+            best_agent.epsilon_decay -= 0.002
+            print(f"Decay rate aumentato per Best Agent: {best_agent.epsilon}")
+            for agent in self.agents:
+                agent.load("pesi.pth")
+        episode_rewards.append(max(self.agents, key=lambda agent: agent.reward))
         self.episode += 1
 
         # Cambio fase se necessario
-        if np.mean(total_rewards) > FASI_TRAINING[self.fase][1]:
+        if np.max(total_rewards) > FASI_TRAINING[self.fase][1]:
             fasi_keys = list(FASI_TRAINING.keys())
             current_index = fasi_keys.index(self.fase)
             if current_index < len(fasi_keys) - 1:
@@ -359,9 +364,22 @@ class GiocoLogicaAi(GiocoLogica):
         self.camera = arcade.camera.Camera2D()
         self.tile_grid = self._build_tile_grid()
 
-
     def get_action(self):
         key = self.view.get_key()
         self.last_action = key
         return key
 
+    def ai_act(self):
+        self.reset()
+        state = self.get_state(0)
+        done = False
+
+        while not done:
+            actions = []
+            # Logica di selezione azione basata sul flag
+            action = self.agents[0].act(state)
+            actions.append(action)
+            next_state, reward, done = self.step(actions)
+
+            state = next_state
+            yield
