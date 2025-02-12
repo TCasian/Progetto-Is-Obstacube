@@ -11,7 +11,7 @@ from utils.RectangleBorder import RectangleBorder
 from Logica.PlayerLogica import Player
 
 TILE_SCALING = 1.0
-PLAYER_SPEED = 1
+PLAYER_SPEED = 10
 GRAVITY = 0.5
 TILE_WIDTH = 32
 TILE_HEIGHT = 32
@@ -111,7 +111,7 @@ class GiocoScreen(arcade.View):
         elif key == arcade.key.NUM_2:
             print(f"diminuzione di 0.005 epsilon da {self.gioco.agents[0].epsilon} a {self.gioco.agents[0].epsilon-0.005}")
             for agent in self.gioco.agents:
-                agent.epsilon += 0.005
+                agent.epsilon -= 0.005
         elif key == arcade.key.NUM_3:
             print(f"aumento di 0.005 decay rate da {self.gioco.agents[0].epsilon_decay} a {self.gioco.agents[0].epsilon_decay + 0.005}")
             for agent in self.gioco.agents:

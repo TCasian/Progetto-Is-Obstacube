@@ -33,6 +33,7 @@ FASI_TRAINING = {
 #Episode: 240, Reward: -195, Epsilon: 0.2496820394481045, Decay 0.988  per ostacoli migliroe1
 #Episode: 8, Reward: -305, Epsilon: 0.6244504783240336, Decay 0.995
 # Episode: 38, Reward: 890, Epsilon: 0.5372673201835692, Decay 0.995
+# 066 - 054
 
 class GiocoLogicaAi(GiocoLogica):
     def __init__(self, window, mappa, view, training_mode=True, multiple = 1):
@@ -63,6 +64,7 @@ class GiocoLogicaAi(GiocoLogica):
         self.last_dx = [0 for _ in range(self.multiple)]
         self.last_colpito = [False for _ in range(self.multiple)]
         self.max_x = [0 for _ in range(self.multiple)]
+
         self.collision_cooldown = 1
         self.last_hit_time = [0 for _ in range(self.multiple)]
         self.last_x = [0 for _ in range(self.multiple)]
@@ -127,7 +129,7 @@ class GiocoLogicaAi(GiocoLogica):
 
         # Ora raccogliamo i risultati per ogni agente
         for i, agent in enumerate(self.agents):
-            print(f"flag - {i} con {self.finish}")
+            #print(f"flag - {i} con {self.finish}")
             next_state = self.get_state(i)
             reward = self.reward_function(i)
             done = self.finish[i] is not None  # Ogni agente ha il proprio flag di fine
@@ -190,14 +192,14 @@ class GiocoLogicaAi(GiocoLogica):
 
         # Aggiornamento modelli ogni 100 episodi
         if self.episode > 0 and self.episode % 100 == 0:
-            best_agent = max(self.agents, key=lambda agent: agent.reward)
+            best_agent = max(self.agents, key=lambda agent: agent.rewards)
             best_agent.update_target_model()
             best_agent.save(f"pesi.pth")
-            best_agent.epsilon_decay -= 0.002
+            #best_agent.epsilon_decay -= 0.002
             print(f"Decay rate aumentato per Best Agent: {best_agent.epsilon}")
             for agent in self.agents:
                 agent.load("pesi.pth")
-        episode_rewards.append(max(self.agents, key=lambda agent: agent.reward))
+        episode_rewards.append(max(self.agents, key=lambda agent: agent.rewards))
         self.episode += 1
 
         # Cambio fase se necessario
@@ -211,7 +213,8 @@ class GiocoLogicaAi(GiocoLogica):
 
                 for agent in self.agents:
                     agent.epsilon = 1
-                    agent.epsilon_decay = 0.995
+                    agent.epsilon_decay = 0.998
+                    #agent.epsilon_min = 0.54
 
                 self.load_map()
                 self.episode = 0
@@ -243,19 +246,24 @@ class GiocoLogicaAi(GiocoLogica):
             if self.last_dx[index] == 0:
                 reward -= 25 #penalita se si sta ancora fermo
 
+        if self.players[index].center_x  < self.max_x[index] -32:
+            reward -= 20 #penalita non prosegue
+        elif self.players[index].center_x  > self.max_x[index] + 32:
+            reward += 10
+
+
         if fase != "movimento":
             #fase ostacoli
             if self.oggetti_colpiti[index]["ostacoli"]:
-                if current_time - self.last_hit_time[index] > self.collision_cooldown:
-                    reward -= 10 #
-                    #print("Colpito -10")
-                    if self.last_colpito[index]:
-                        reward -= 10  # penalita aggiuntiva se continua a colpire
-                        #print("Colpito ancora -20")
-                    self.last_hit_time[index] = current_time
-                    self.last_colpito[index] = True
-                else:
-                    self.last_colpito[index] = False
+                #print("colpito")
+                reward -= 1 #
+                #print("Colpito -10")
+                if self.last_colpito[index]:
+                    reward -= 1  # penalita aggiuntiva se continua a colpire
+                    #print("Colpito ancora -20")
+                self.last_hit_time[index] = current_time
+                self.last_colpito[index] = True
+
                 if fase != "ostacoli":
                         #fase danni
                         if self.oggetti_colpiti["danni"]:
@@ -268,13 +276,10 @@ class GiocoLogicaAi(GiocoLogica):
                                     reward += 5
                                     if fase != "raccolta":
                                         #fase goal
-                                        if self.finish == "Win":
-                                            reward += 500
-                                        if self.finish == "Gameover":
-                                           reward -= 100
+                                        pass
             else:
                 # non ha colpito reward se non è mai arrivato qua (32 px per grid per evitare reward continui ad ogni movimento)
-                if self.players[index].center_x > self.max_x[index]:
+                if self.players[index].center_x +32 > self.max_x[index]:
                     reward += 10
                     #print("nuovo traguardo +10")
                     if not self.last_colpito:
@@ -285,12 +290,15 @@ class GiocoLogicaAi(GiocoLogica):
                     if self.players[index].ostacolo_vicino:
                         reward += 10
 
-
+        if self.finish[index] == "Win":
+            reward += 200
+        if self.finish[index] == "Gameover":
+            reward -= 100
 
         self.last_x[index] = self.players[index].center_x
         self.last_dx[index] = dx
         if self.players[index].center_x > self.max_x[index]:
-            self.max_x[index] = self.players[index].center_x + 32
+            self.max_x[index] = self.players[index].center_x
 
         return reward
 
