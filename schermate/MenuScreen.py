@@ -1,5 +1,4 @@
 import arcade
-from trio import sleep
 
 from Logica.ImpostazioniLogica import ImpostazioniLogica
 from Logica.MenuLogica import MenuLogica

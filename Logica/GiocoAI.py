@@ -2,8 +2,6 @@ import time
 import matplotlib.pyplot as plt
 import arcade
 import numpy as np
-from sympy.printing.pretty.pretty_symbology import center
-from sympy.strategies.core import switch
 
 from Logica.AILogica import DQNAgent
 from Logica.ImpostazioniLogica import ImpostazioniLogica

@@ -33,5 +33,15 @@
         "nome": "Epilettico",
         "costo": 100,
         "acquistata": false
+    },
+    {
+        "nome": "pacman",
+        "costo": 100,
+        "acquistata": false
+    },
+    {
+        "nome": "space invaders",
+        "costo": 100,
+        "acquistata": false
     }
 ]

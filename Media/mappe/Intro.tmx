@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.10" tiledversion="1.11.1" orientation="orthogonal" renderorder="right-down" width="37" height="24" tilewidth="32" tileheight="32" infinite="0" nextlayerid="7" nextobjectid="1">
- <tileset firstgid="1" source="../../../Obstacube-FIA/Media/Tilesets/TX Tileset Grass.tsx"/>
- <tileset firstgid="65" source="../../../Obstacube-FIA/Media/Tilesets/TX Tileset Wall.tsx"/>
- <tileset firstgid="321" source="../../../Obstacube-FIA/Media/Tilesets/TX Tileset Stone Ground.tsx"/>
- <tileset firstgid="385" source="../../../Obstacube-FIA/Media/Tilesets/TX Props.tsx"/>
- <tileset firstgid="641" source="../../../Obstacube-FIA/Media/Tilesets/TX Plant.tsx"/>
- <tileset firstgid="897" source="../../../Obstacube-FIA/Media/Tilesets/TX Shadow Plant.tsx"/>
+ <tileset firstgid="1" source="../../../Progetto-is-Obstacube/Media/Tilesets/TX Tileset Grass.tsx"/>
+ <tileset firstgid="65" source="../../../Progetto-is-Obstacube/Media/Tilesets/TX Tileset Wall.tsx"/>
+ <tileset firstgid="321" source="../../../Progetto-is-Obstacube/Media/Tilesets/TX Tileset Stone Ground.tsx"/>
+ <tileset firstgid="385" source="../../../Progetto-is-Obstacube/Media/Tilesets/TX Props.tsx"/>
+ <tileset firstgid="641" source="../../../Progetto-is-Obstacube/Media/Tilesets/TX Plant.tsx"/>
+ <tileset firstgid="897" source="../../../Progetto-is-Obstacube/Media/Tilesets/TX Shadow Plant.tsx"/>
  <layer id="1" name="terreno" width="37" height="24">
   <data encoding="csv">
 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,6,7,8,
